@@ -1,39 +1,17 @@
-def out_byte(byte):
+from io import StringIO
+from midi.events import *
+from events import csv_to_midi_map
+from midi.fileio import read_midifile
+
+def write_event(event, file):
     pass
 
-def out_event(byte):
+def parse(file):
     pass
 
-def out_meta(byte):
-    pass
-
-def out_short(short):
-    pass
-
-def out_bytes(byte, len):
-    pass
-
-def out_varlen(num):
-    pass
-
-def x_fields(n, fbias):
-    pass
-
-def n_fields(n):
-    pass
-
-def check_bytes(field_number, len):
-    pass
-
-def get_csv_line(file):
-    pass
-
-def clamp(value, min, max, field):
-    pass
-
-def main():
-    pass
+def main(file):
+    print(parse(file).getvalue())
 
 if __name__ == '__main__':
     # TODO: Set up argparse
-    main()
+    main("test.csv")

@@ -1,17 +1,45 @@
-from io import StringIO
+import sys
+from csv import reader
 from midi.events import *
+from midi.containers import *
+from io import StringIO, BytesIO
 from events import csv_to_midi_map
-from midi.fileio import read_midifile
+from midi.fileio import FileWriter
 
-def write_event(event, file):
-    pass
+COMMENT_DELIMITERS = ("#", ";")
 
+# input is a string, file or file-like object of type stringIO or bytesIO
+# output is file-like object of type bytesIO containing the binary MIDI data
 def parse(file):
-    pass
+    pattern = Pattern(tick_relative=False)
+    for line in reader(file, skipinitialspace=True):
+        if line[0].startswith(COMMENT_DELIMITERS):
+            continue
+        tr = int(line[0])
+        time = int(line[1])
+        identifier = line[2].strip()
+        if identifier == "Header":
+            pattern.resolution = int(line[5])
+        elif identifier == "End_of_file":
+            continue
+        elif identifier == "Start_track":
+            track = Track(tick_relative=False)
+            pattern.append(track)
+        else:
+            event = csv_to_midi_map[identifier](tr, time, identifier, line[3:])
+            track.append(event)
+    pattern.make_ticks_rel()
+    return pattern
 
 def main(file):
-    print(parse(file).getvalue())
+    if isinstance(file, str):
+        with open(file, 'r') as f:
+            return main(f)
+    pattern = parse(file)
+    with open("out.mid", "wb") as midi_file:
+        midi_writer = FileWriter(midi_file)
+        midi_writer.write(pattern)
 
 if __name__ == '__main__':
     # TODO: Set up argparse
-    main("test.csv")
+    main("large.csv")

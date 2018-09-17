@@ -1,5 +1,6 @@
 ### System ###
 from io import StringIO
+import argparse
 
 ### Local ###
 from events import midi_to_csv_map
@@ -24,9 +25,20 @@ def parse(file):
     return csv_file
 
 
-def main(file):
-    print(parse(file).getvalue())
+def main(args):
+    with open(args.input, "rb") as input_file:
+        converted = parse(input_file)
+        with open(args.output, "w") as output_file:
+            output_file.write(converted.getvalue())
+
 
 if __name__ == "__main__":
-    # TODO: Set up argparse
-    main("out.mid")
+    import argparse
+    parser = argparse.ArgumentParser(description="Converts a MIDI file into a CSV representation.")
+    parser.add_argument("-i", "--input", type=str, dest="input", required=True,
+                        metavar="file", help="(required) The file to convert to CSV")
+    parser.add_argument("-o", "--output", type=str, dest="output", required=True,
+                        metavar="file", help="(required) The file to write the output to")
+    args = parser.parse_args()
+
+    main(args)

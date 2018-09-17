@@ -1,6 +1,6 @@
 ### System ###
 import sys
-from csv import reader
+import csv
 from io import StringIO, BytesIO
 
 ### Local ###
@@ -18,7 +18,7 @@ def parse(file):
     Output is a file-like object of type bytesIO containing the binary MIDI data.
     """
     pattern = Pattern(tick_relative=False)
-    for line in reader(file, skipinitialspace=True):
+    for line in csv.reader(file, skipinitialspace=True):
         if line[0].startswith(COMMENT_DELIMITERS):
             continue
         tr = int(line[0])
@@ -38,15 +38,21 @@ def parse(file):
     return pattern
 
 
-def main(file):
-    if isinstance(file, str):
-        with open(file, 'r') as f:
-            return main(f)
-    pattern = parse(file)
-    with open("out.mid", "wb") as midi_file:
-        midi_writer = FileWriter(midi_file)
-        midi_writer.write(pattern)
+def main(args):
+    with open(args.input, "r") as input_file:
+        pattern = parse(input_file)
+        with open(args.output, "wb") as output_file:
+            midi_writer = FileWriter(output_file)
+            midi_writer.write(pattern)
+
 
 if __name__ == "__main__":
-    # TODO: Set up argparse
-    main("large.csv")
+    import argparse
+    parser = argparse.ArgumentParser(description="Converts a CSV file into MIDI representation.")
+    parser.add_argument("-i", "--input", type=str, dest="input", required=True,
+                        metavar="file", help="(required) The file to convert to MIDI")
+    parser.add_argument("-o", "--output", type=str, dest="output", required=True,
+                        metavar="file", help="(required) The file to write the output to")
+    args = parser.parse_args()
+
+    main(args)

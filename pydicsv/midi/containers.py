@@ -1,6 +1,9 @@
-from pprint import pformat, pprint
+### System ###
+from pprint import pformat
+
 
 class Pattern(list):
+
     def __init__(self, tracks=[], resolution=220, format=1, tick_relative=True):
         self.format = format
         self.resolution = resolution
@@ -25,7 +28,7 @@ class Pattern(list):
         if isinstance(item, slice):
             indices = item.indices(len(self))
             return Pattern(resolution=self.resolution, format=self.format,
-                            tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)))
+                           tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)))
         else:
             return super(Pattern, self).__getitem__(item)
 
@@ -34,7 +37,9 @@ class Pattern(list):
         # for calls of the form List[i:j]
         return self.__getitem__(slice(i, j))
 
+
 class Track(list):
+
     def __init__(self, events=[], tick_relative=True):
         self.tick_relative = tick_relative
         super(Track, self).__init__(events)

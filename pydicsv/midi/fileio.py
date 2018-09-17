@@ -4,7 +4,9 @@ from struct import unpack, pack
 from .constants import *
 from .util import *
 
+
 class FileReader(object):
+
     def read(self, midifile):
         pattern = self.parse_file_header(midifile)
         for track in pattern:
@@ -15,7 +17,7 @@ class FileReader(object):
         # First four bytes are MIDI header
         magic = midifile.read(4)
         if magic != b'MThd':
-            raise TypeError("Bad header in MIDI file.",magic)
+            raise TypeError("Bad header in MIDI file.", magic)
         # next four bytes are header size
         # next two bytes specify the format version
         # next two bytes specify the number of tracks
@@ -36,7 +38,7 @@ class FileReader(object):
         # First four bytes are Track header
         magic = midifile.read(4)
         if magic != b'MTrk':
-            raise TypeError("Bad track header in MIDI file: ",magic)
+            raise TypeError("Bad track header in MIDI file: ", magic)
         # next four bytes are track size
         trksz = unpack(">L", midifile.read(4))[0]
         return trksz
@@ -95,9 +97,11 @@ class FileReader(object):
                 return cls(tick=tick, channel=channel, data=data)
         raise Warning("Unknown MIDI Event: " + repr(stsmsg))
 
+
 class FileWriter(object):
     RunningStatus = None
-    def __init__(self,file):
+
+    def __init__(self, file):
         self.file = file
 
     def write(self, pattern):
@@ -117,14 +121,14 @@ class FileWriter(object):
 
     def write_track(self, track):
         hlen = len(self.encode_track_header(0))
-        buf = bytearray(b'0'*hlen)
+        buf = bytearray(b'0' * hlen)
         for event in track:
             buf.extend(self.encode_midi_event(event))
-        buf[:hlen] = self.encode_track_header(len(buf)-hlen)
+        buf[:hlen] = self.encode_track_header(len(buf) - hlen)
         self.file.write(buf)
 
-    def write_track_header(self,track=None):
-        trklen = 1 if track is None else track if isinstance(track,int) else len(track)
+    def write_track_header(self, track=None):
+        trklen = 1 if track is None else track if isinstance(track, int) else len(track)
         self.file.write(self.encode_track_header(trklen))
 
     def encode_track_header(self, trklen):
@@ -162,12 +166,14 @@ class FileWriter(object):
             raise ValueError("Unknown MIDI Event: " + str(event))
         return ret
 
+
 def write_midifile(midifile, pattern):
     if type(midifile) in (str, str):
         with open(midifile, 'wb') as out:
-            return write_midifile(out,pattern)
+            return write_midifile(out, pattern)
     writer = FileWriter(midifile)
     return writer.write(pattern)
+
 
 def read_midifile(midifile):
     if type(midifile) in (str, bytes):

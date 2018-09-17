@@ -1,16 +1,22 @@
+### System ###
 import sys
 from csv import reader
+from io import StringIO, BytesIO
+
+### Local ###
 from midi.events import *
 from midi.containers import *
-from io import StringIO, BytesIO
 from events import csv_to_midi_map
 from midi.fileio import FileWriter
 
 COMMENT_DELIMITERS = ("#", ";")
 
-# input is a string, file or file-like object of type stringIO or bytesIO
-# output is file-like object of type bytesIO containing the binary MIDI data
+
 def parse(file):
+    """
+    Input is a string, file or file-like object of type stringIO or bytesIO.
+    Output is a file-like object of type bytesIO containing the binary MIDI data.
+    """
     pattern = Pattern(tick_relative=False)
     for line in reader(file, skipinitialspace=True):
         if line[0].startswith(COMMENT_DELIMITERS):
@@ -31,6 +37,7 @@ def parse(file):
     pattern.make_ticks_rel()
     return pattern
 
+
 def main(file):
     if isinstance(file, str):
         with open(file, 'r') as f:
@@ -40,6 +47,6 @@ def main(file):
         midi_writer = FileWriter(midi_file)
         midi_writer.write(pattern)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # TODO: Set up argparse
     main("large.csv")

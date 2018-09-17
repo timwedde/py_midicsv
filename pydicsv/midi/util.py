@@ -15,6 +15,7 @@ def read_varlen(data):
         value += chr
     return value
 
+
 def write_varlen(value):
     b1 = value & 0x7F
     value >>= 7
@@ -26,11 +27,11 @@ def write_varlen(value):
             value >>= 7
             if value:
                 b4 = (value & 0x7F) | 0x80
-                res = bytes((b4,b3,b2,b1))
+                res = bytes((b4, b3, b2, b1))
             else:
-                res = bytes((b3,b2,b1))
+                res = bytes((b3, b2, b1))
         else:
-            res = bytes((b2,b1))
+            res = bytes((b2, b1))
     else:
         res = bytes((b1,))
     return res

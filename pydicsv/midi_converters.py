@@ -86,7 +86,7 @@ def from_ChannelPrefixEvent(track, time, event):
 
 
 def from_PortEvent(track, time, event):
-    return write_event(track, time, "MIDI_port", [*event.data])
+    return write_event(track, time, "MIDI_port", [*event.data] if event.data else [0])
 
 
 def from_EndOfTrackEvent(track, time, event):

@@ -139,5 +139,5 @@ def to_SequencerSpecificEvent(track, time, identifier, line):
 
 
 def to_SysexEvent(track, time, identifier, line):
-    length, text = int(line[0]), text_decode(line[1]).encode()
-    return SysexEvent(tick=time, data=text)
+    length, data = int(line[0]), [int(item) for item in line[1:]]
+    return SysexEvent(tick=time, data=data)

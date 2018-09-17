@@ -1,4 +1,4 @@
-# pydicsv
+# py-midicsv
 A Python library inspired by the midicsv tool (originally found [here](http://www.fourmilab.ch/webtools/midicsv/)).
 
 ## Disclaimer

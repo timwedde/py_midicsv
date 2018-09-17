@@ -1,8 +1,8 @@
 # pydicsv
 A Python library inspired by the midicsv tool (originally found [here](http://www.fourmilab.ch/webtools/midicsv/)).
 
-# THIS LIBRARY IS CURRENTLY NOT FUNCTIONAL!
-This library is currently under development and will be subject to massive changes as well as bugs and errors during this time.
+## Disclaimer
+This library is currently in Beta. This means that the interface might change and that the encoding scheme is not yet finalised. Expect slight inconsistencies.
 
 ## Differences
 This library adheres as much as possible to how the original library works, however generated files are not guaranteed to be entirely identical when compared bit-by-bit.  

@@ -1,16 +1,16 @@
 from setuptools import setup
 
 setup(name='pydicsv',
-    version='1.0.0',
+    version='1.1.0',
     description='A library for converting MIDI files from and to CSV format.',
     long_description='''
-        pydicsv is a Python port of the tools midicsv and csvmidi, which enable
-        the conversion of MIDI files from and to CSV files, making them easier to work with.
+        pydicsv is a Python port of the tools midicsv and csvmidi (http://www.fourmilab.ch/webtools/midicsv/),
+        which enable the conversion of MIDI files from and to CSV files, making them easier to work with.
         The main advantage to representing MIDI events as text is the easy application
         of text processing to these events, making MIDI files easy to work with and quick to modify.
         ''',
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 4 - Beta',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3 :: Only',
         'Topic :: Multimedia :: Sound/Audio :: MIDI',

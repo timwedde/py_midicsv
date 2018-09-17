@@ -1,5 +1,4 @@
 ### System ###
-import sys
 import csv
 from io import StringIO, BytesIO
 

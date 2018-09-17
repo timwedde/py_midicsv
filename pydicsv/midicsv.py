@@ -1,6 +1,5 @@
 ### System ###
 from io import StringIO
-import argparse
 
 ### Local ###
 from events import midi_to_csv_map

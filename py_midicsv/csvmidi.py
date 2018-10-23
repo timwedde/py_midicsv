@@ -3,10 +3,10 @@ import csv
 from io import StringIO, BytesIO
 
 ### Local ###
-from midi.events import *
-from midi.containers import *
-from events import csv_to_midi_map
-from midi.fileio import FileWriter
+from .midi.events import *
+from .midi.containers import *
+from .events import csv_to_midi_map
+from .midi.fileio import FileWriter
 
 COMMENT_DELIMITERS = ("#", ";")
 

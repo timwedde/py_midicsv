@@ -2,7 +2,7 @@
 import re
 
 ### Local ###
-from midi.events import *
+from .midi.events import *
 
 
 def text_decode(text):

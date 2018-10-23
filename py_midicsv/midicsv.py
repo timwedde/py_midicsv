@@ -2,8 +2,8 @@
 from io import StringIO
 
 ### Local ###
-from events import midi_to_csv_map
-from midi.fileio import read_midifile
+from .events import midi_to_csv_map
+from .midi.fileio import read_midifile
 
 
 def parse(file):

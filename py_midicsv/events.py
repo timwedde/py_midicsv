@@ -1,6 +1,6 @@
-from midi.events import *
-from csv_converters import *
-from midi_converters import *
+from .midi.events import *
+from .csv_converters import *
+from .midi_converters import *
 
 midi_to_csv_map = {
     NoteOffEvent: from_NoteOffEvent,

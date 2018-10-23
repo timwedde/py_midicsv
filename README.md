@@ -22,7 +22,7 @@ midi_object = py_midicsv.csv_to_midi(csv_string)
 
 # Save the parsed MIDI file to disk
 with open("example_converted.mid", "wb") as output_file:
-    midi_writer = FileWriter(output_file)
+    midi_writer = py_midicsv.FileWriter(output_file)
     midi_writer.write(midi_object)
 ```
 

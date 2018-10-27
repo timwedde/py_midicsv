@@ -200,7 +200,7 @@ class ProgramChangeEvent(Event):
 
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
-    length = 1
+    length = 2
     name = 'Channel After Touch'
 
     def set_value(self, val):
@@ -232,7 +232,7 @@ class SysexEvent(Event):
     length = 'varlen'
 
     def is_event(cls, statusmsg):
-        return (cls.statusmsg == statusmsg)
+        return (cls.statusmsg == statusmsg or statusmsg == 0xF9)
     is_event = classmethod(is_event)
 
 

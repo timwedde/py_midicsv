@@ -48,8 +48,8 @@ def to_PitchWheelEvent(track, time, identifier, line):
 
 
 def to_SequenceNumberMetaEvent(track, time, identifier, line):
-    channel, value = map(int, line)
-    return SequenceNumberMetaEvent(tick=time, channel=channel, value=value)
+    value = int(line[0])
+    return SequenceNumberMetaEvent(tick=time, value=value)
 
 
 def to_ProgramNameEvent(track, time, identifier, line):

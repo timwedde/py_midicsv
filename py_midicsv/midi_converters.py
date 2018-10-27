@@ -38,7 +38,7 @@ def from_ProgramChangeEvent(track, time, event):
 
 
 def from_ChannelAfterTouchEvent(track, time, event):
-    return write_event(track, time, "Channel_aftertouch_c", [event.channel, *event.data])
+    return write_event(track, time, "Channel_aftertouch_c", [event.channel, event.data[0]])
 
 
 def from_PitchWheelEvent(track, time, event):

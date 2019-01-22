@@ -12,9 +12,14 @@ COMMENT_DELIMITERS = ("#", ";")
 
 
 def parse(file):
-    """
-    Input is a string, file or file-like object of type stringIO or bytesIO.
-    Output is a file-like object of type bytesIO containing the binary MIDI data.
+    """Parses a CSV file into MIDI format.
+
+    Args:
+        file: A string giving the path to a file on disk or an open file-like object.
+
+    Returns:
+        A Pattern() object containing the byte-representations as parsed from
+        the input file.
     """
     pattern = Pattern(tick_relative=False)
     for line in csv.reader(file, skipinitialspace=True):

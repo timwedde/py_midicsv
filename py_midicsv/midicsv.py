@@ -7,9 +7,18 @@ from .midi.fileio import read_midifile
 
 
 def parse(file):
-    """
-    Input is a string, file or file-like object of type stringIO or bytesIO.
-    Output is a list of strings containing the CSV data.
+    """Parses a MIDI file into CSV format.
+
+    Args:
+        file: A string giving the path to a file on disk or an open file-like object.
+
+    Returns:
+        A list of strings, with each string containing one atomic MIDI command
+        in CSV format.
+
+        ["0, 0, Header, 1, 1, 480",
+         "1, 0, Start_track",
+         "1, 0, Tempo, 500000"]
     """
     csv_file = []
     pattern = read_midifile(file)

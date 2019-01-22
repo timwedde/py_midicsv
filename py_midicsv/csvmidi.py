@@ -35,23 +35,3 @@ def parse(file):
             track.append(event)
     pattern.make_ticks_rel()
     return pattern
-
-
-def main(args):
-    with open(args.input, "r") as input_file:
-        pattern = parse(input_file)
-        with open(args.output, "wb") as output_file:
-            midi_writer = FileWriter(output_file)
-            midi_writer.write(pattern)
-
-
-if __name__ == "__main__":
-    import argparse
-    parser = argparse.ArgumentParser(description="Converts a CSV file into MIDI representation.")
-    parser.add_argument("-i", "--input", type=str, dest="input", required=True,
-                        metavar="file", help="(required) The file to convert to MIDI")
-    parser.add_argument("-o", "--output", type=str, dest="output", required=True,
-                        metavar="file", help="(required) The file to write the output to")
-    args = parser.parse_args()
-
-    main(args)

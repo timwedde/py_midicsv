@@ -23,6 +23,8 @@ def parse(file):
     """
     pattern = Pattern(tick_relative=False)
     for line in csv.reader(file, skipinitialspace=True):
+        if not line:
+            continue
         if line[0].startswith(COMMENT_DELIMITERS):
             continue
         tr = int(line[0])

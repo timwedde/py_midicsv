@@ -114,7 +114,7 @@ def from_TimeSignatureEvent(track, time, event):
 
 
 def from_KeySignatureEvent(track, time, event):
-    return write_event(track, time, "Key_signature", [event.get_alternatives(), '"major"' if event.data[1] == 0 else '"minor"'])
+    return write_event(track, time, "Key_signature", [event.get_alternatives(), '"major"' if len(event.data) > 1 and event.data[1] == 0 else '"minor"'])
 
 
 def from_SequencerSpecificEvent(track, time, event):

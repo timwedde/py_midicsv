@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='py_midicsv',
-    version='1.8.2',
+    version='1.8.3',
     description='A library for converting MIDI files from and to CSV format.',
     long_description='''
         py_midicsv is a Python port of the tools midicsv and csvmidi (http://www.fourmilab.ch/webtools/midicsv/),

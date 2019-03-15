@@ -11,16 +11,20 @@ from .midi.fileio import FileWriter
 COMMENT_DELIMITERS = ("#", ";")
 
 
-def parse(file):
+def parse(file, path=False):
     """Parses a CSV file into MIDI format.
 
     Args:
         file: A string giving the path to a file on disk or an open file-like object.
+        path: Indicates if first parameter is a file path (False) or data string (True)
 
     Returns:
         A Pattern() object containing the byte-representations as parsed from
         the input file.
     """
+    if path:
+        file = open(file)
+
     pattern = Pattern(tick_relative=False)
     for line in csv.reader(file, skipinitialspace=True):
         if not line:
@@ -41,4 +45,8 @@ def parse(file):
             event = csv_to_midi_map[identifier](tr, time, identifier, line[3:])
             track.append(event)
     pattern.make_ticks_rel()
+
+    if path:
+        file.close()
+
     return pattern

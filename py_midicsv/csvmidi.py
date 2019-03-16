@@ -21,6 +21,11 @@ def parse(file):
         A Pattern() object containing the byte-representations as parsed from
         the input file.
     """
+
+    if isinstance(file, str):
+        with open(file, "r") as f:
+            return parse(f)
+
     pattern = Pattern(tick_relative=False)
     for line in csv.reader(file, skipinitialspace=True):
         if not line:

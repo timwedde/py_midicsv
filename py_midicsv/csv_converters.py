@@ -106,8 +106,8 @@ def to_EndOfTrackEvent(track, time, identifier, line):
     return EndOfTrackEvent(tick=time)
 
 
-def to_SomethingEvent(track, time, identifier, line):
-    return SomethingEvent(tick=time)
+def to_DeviceNameEvent(track, time, identifier, line):
+    return DeviceNameEvent(tick=time)
 
 
 def to_TrackLoopEvent(track, time, identifier, line):

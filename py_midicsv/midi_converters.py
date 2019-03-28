@@ -93,8 +93,8 @@ def from_EndOfTrackEvent(track, time, event):
     return write_event(track, time, "End_track", [])
 
 
-def from_SomethingEvent(track, time, event):
-    return write_event(track, time, "Something", [])
+def from_DeviceNameEvent(track, time, event):
+    return write_event(track, time, "Device_name", [])
 
 
 def from_TrackLoopEvent(track, time, event):

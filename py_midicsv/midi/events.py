@@ -301,8 +301,8 @@ class ProgramNameEvent(MetaEventWithText):
     length = 'varlen'
 
 
-class SomethingEvent(MetaEvent):
-    name = 'Something'
+class DeviceNameEvent(MetaEvent):
+    name = 'Device Name'
     metacommand = 0x09
 
 

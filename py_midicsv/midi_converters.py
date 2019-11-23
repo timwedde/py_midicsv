@@ -94,7 +94,7 @@ def from_EndOfTrackEvent(track, time, event):
 
 
 def from_DeviceNameEvent(track, time, event):
-    return write_event(track, time, "Device_name", [])
+    return write_event(track, time, "Device_name_t", ['"{}"'.format(text_encode(event.text))])
 
 
 def from_TrackLoopEvent(track, time, event):

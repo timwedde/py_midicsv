@@ -52,7 +52,7 @@ csv_to_midi_map = {
     "Channel_prefix": to_ChannelPrefixEvent,
     "MIDI_port": to_PortEvent,
     "End_track": to_EndOfTrackEvent,
-    "DeviceName": to_DeviceNameEvent,
+    "Device_name_t": to_DeviceNameEvent,
     "Loop_track": to_TrackLoopEvent,
     "Tempo": to_SetTempoEvent,
     "SMPTE_offset": to_SmpteOffsetEvent,

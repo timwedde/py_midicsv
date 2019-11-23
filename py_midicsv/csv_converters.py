@@ -107,7 +107,8 @@ def to_EndOfTrackEvent(track, time, identifier, line):
 
 
 def to_DeviceNameEvent(track, time, identifier, line):
-    return DeviceNameEvent(tick=time)
+    text = text_decode(line[0]).encode()
+    return DeviceNameEvent(tick=time, data=text)
 
 
 def to_TrackLoopEvent(track, time, identifier, line):

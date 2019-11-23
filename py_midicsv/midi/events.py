@@ -200,14 +200,14 @@ class ProgramChangeEvent(Event):
 
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
-    length = 2
+    length = 1
     name = 'Channel After Touch'
 
     def set_value(self, val):
-        self.data[1] = val
+        self.data[0] = val
 
     def get_value(self):
-        return self.data[1]
+        return self.data[0]
     value = property(get_value, set_value)
 
 

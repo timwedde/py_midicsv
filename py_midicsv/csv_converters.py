@@ -23,8 +23,8 @@ def to_NoteOnEvent(track, time, identifier, line):
 
 
 def to_AfterTouchEvent(track, time, identifier, line):
-    cannel, value = map(int, line)
-    return AfterTouchEvent(tick=time, channel=channel, value=value)
+    channel, pitch, value = map(int, line)
+    return AfterTouchEvent(tick=time, channel=channel, pitch=pitch, value=value)
 
 
 def to_ControlChangeEvent(track, time, identifier, line):

@@ -447,3 +447,4 @@ class KeySignatureEvent(MetaEvent):
 class SequencerSpecificEvent(MetaEvent):
     name = 'Sequencer Specific'
     metacommand = 0x7F
+    length = 'varlen'

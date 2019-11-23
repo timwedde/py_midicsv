@@ -120,7 +120,8 @@ def to_SetTempoEvent(track, time, identifier, line):
 
 
 def to_SmpteOffsetEvent(track, time, identifier, line):
-    return SmpteOffsetEvent(tick=time)
+    hr, mn, se, fr, ff = map(int, line)
+    return SmpteOffsetEvent(tick=time, hr=hr, mn=mn, se=se, fr=fr, ff=ff)
 
 
 def to_TimeSignatureEvent(track, time, identifier, line):

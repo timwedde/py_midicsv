@@ -352,7 +352,42 @@ class SetTempoEvent(MetaEvent):
 class SmpteOffsetEvent(MetaEvent):
     name = 'SMPTE Offset'
     metacommand = 0x54
+    length = 5
 
+    def get_hr(self):
+        return self.data[0]
+
+    def set_hr(self, val):
+        self.data[0] = val
+    hr = property(get_hr, set_hr)
+
+    def get_mn(self):
+        return self.data[1]
+
+    def set_mn(self, val):
+        self.data[1] = val
+    mn = property(get_mn, set_mn)
+
+    def get_se(self):
+        return self.data[2]
+
+    def set_se(self, val):
+        self.data[2] = val
+    se = property(get_se, set_se)
+
+    def get_fr(self):
+        return self.data[3]
+
+    def set_fr(self, val):
+        self.data[3] = val
+    fr = property(get_fr, set_fr)
+
+    def get_ff(self):
+        return self.data[4]
+
+    def set_ff(self, val):
+        self.data[4] = val
+    ff = property(get_ff, set_ff)
 
 class TimeSignatureEvent(MetaEvent):
     name = 'Time Signature'

@@ -93,13 +93,13 @@ def to_CuePointEvent(track, time, identifier, line):
 
 
 def to_ChannelPrefixEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
-    return ChannelPrefixEvent(tick=time, data=text)
+    channel = int(line[0])
+    return ChannelPrefixEvent(tick=time, data=[channel])
 
 
 def to_PortEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
-    return PortEvent(tick=time, text=text)
+    port = int(line[0])
+    return PortEvent(tick=time, data=[port])
 
 
 def to_EndOfTrackEvent(track, time, identifier, line):

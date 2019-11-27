@@ -2,7 +2,6 @@ import struct
 ### Local ###
 from .midi.events import *
 
-
 def as_csv_str(bytestr):
     csv_str = ""
     for byte in bytestr:
@@ -18,7 +17,13 @@ def as_csv_str(bytestr):
 
 
 def write_event(track, time, identifier, data):
-    return ("{}, {}, {}" + (", {}" * len(data)) + "\n").format(track, time, identifier, *data)
+    Items = ["{}, {}, {}".format(track, time, identifier)]
+    if identifier.startswith("System") or identifier == "Sequencer_specific":
+        fmt = "{:02X}"
+    else:
+        fmt = "{}"
+    Items.extend(fmt.format(x) if type(x) == int else x for x in data)
+    return ", ".join(Items) + "\n"
 
 
 def from_NoteOffEvent(track, time, event):

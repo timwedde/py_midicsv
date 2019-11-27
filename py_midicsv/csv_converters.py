@@ -142,16 +142,20 @@ def to_KeySignatureEvent(track, time, identifier, line):
     return KeySignatureEvent(tick=time, alternatives=key, minor=major)
 
 
+def hx(s):
+    return int(s,16)
+
+
 def to_SequencerSpecificEvent(track, time, identifier, line):
-    length, data = int(line[0]), [int(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
     return SequencerSpecificEvent(tick=time, data=data)
 
 
 def to_SysexEvent(track, time, identifier, line):
-    length, data = int(line[0]), [int(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
     return SysexEvent(tick=time, data=data)
 
 
-def to_Sysex7Event(track, time, identifier, line):
-    length, data = int(line[0]), [int(item) for item in line[1:]]
+def to_SysexF7Event(track, time, identifier, line):
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
     return SysexF7Event(tick=time, data=data)

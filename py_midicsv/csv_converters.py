@@ -143,3 +143,8 @@ def to_SequencerSpecificEvent(track, time, identifier, line):
 def to_SysexEvent(track, time, identifier, line):
     length, data = int(line[0]), [int(item) for item in line[1:]]
     return SysexEvent(tick=time, data=data)
+
+
+def to_Sysex7Event(track, time, identifier, line):
+    length, data = int(line[0]), [int(item) for item in line[1:]]
+    return SysexF7Event(tick=time, data=data)

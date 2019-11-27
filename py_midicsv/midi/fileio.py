@@ -72,7 +72,10 @@ class FileReader(object):
         elif SysexEvent.is_event(stsmsg):
             datalen = read_varlen(trackdata)
             data = [next(trackdata) for _ in range(datalen)]
-            return SysexEvent(tick=tick, data=data)
+            if stsmsg not in EventRegistry.Events:
+                raise Warning("Unknown Sysex Event: {:02x}".format(stsmsg))
+            cls = EventRegistry.Events[stsmsg]
+            return cls(tick=tick, data=data)
         # not a Meta MIDI event or a Sysex event, must be a general message
         else:
             key = stsmsg & 0xF0
@@ -148,7 +151,7 @@ class FileWriter(object):
             ret.extend(event.data)
         # is this event a Sysex Event?
         elif isinstance(event, SysexEvent):
-            ret.append(0xF0)
+            ret.append(event.statusmsg)
             ret.extend(write_varlen(len(event.data)))
             ret.extend(event.data)
         # not a Meta MIDI event or a Sysex event, must be a general message

@@ -30,6 +30,7 @@ midi_to_csv_map = {
     KeySignatureEvent: from_KeySignatureEvent,
     SequencerSpecificEvent: from_SequencerSpecificEvent,
     SysexEvent: from_SysexEvent,
+    SysexF7Event: from_SysexF7Event,
 }
 
 csv_to_midi_map = {
@@ -60,4 +61,5 @@ csv_to_midi_map = {
     "Key_signature": to_KeySignatureEvent,
     "Sequencer_specific": to_SequencerSpecificEvent,
     "System_exclusive": to_SysexEvent,
+    "System_exclusive_F7": to_SysexF7Event,
 }

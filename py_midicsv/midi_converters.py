@@ -123,3 +123,7 @@ def from_SequencerSpecificEvent(track, time, event):
 
 def from_SysexEvent(track, time, event):
     return write_event(track, time, "System_exclusive", [len(event.data), *event.data])
+
+
+def from_SysexF7Event(track, time, event):
+    return write_event(track, time, "System_exclusive_F7", [len(event.data), *event.data])

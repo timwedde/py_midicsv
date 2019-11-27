@@ -7,7 +7,7 @@ class EventRegistry(object):
     MetaEvents = {}
 
     def register_event(cls, event, bases):
-        if (Event in bases) or (NoteEvent in bases):
+        if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
             assert event.statusmsg not in cls.Events, \
                 "Event %s already registered" % event.name
             cls.Events[event.statusmsg] = event
@@ -232,7 +232,7 @@ class SysexEvent(Event):
     length = 'varlen'
 
     def is_event(cls, statusmsg):
-        return (cls.statusmsg == statusmsg or statusmsg == 0xF9)
+        return (cls.statusmsg == statusmsg or statusmsg == 0xF7)
     is_event = classmethod(is_event)
 
 
@@ -449,3 +449,8 @@ class SequencerSpecificEvent(MetaEvent):
     name = 'Sequencer Specific'
     metacommand = 0x7F
     length = 'varlen'
+
+
+class SysexF7Event(SysexEvent):
+    statusmsg = 0xF7
+    name = 'SysExF7'

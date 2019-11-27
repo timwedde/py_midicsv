@@ -66,16 +66,12 @@ class FileReader(object):
                 raise Warning("Unknown Meta MIDI Event: " + repr(cmd))
             cls = EventRegistry.MetaEvents[cmd]
             datalen = read_varlen(trackdata)
-            data = [next(trackdata) for x in range(datalen)]
+            data = [next(trackdata) for _ in range(datalen)]
             return cls(tick=tick, data=data)
         # is this event a Sysex Event?
         elif SysexEvent.is_event(stsmsg):
-            data = []
-            while True:
-                datum = next(trackdata)
-                if datum == 0xF7:
-                    break
-                data.append(datum)
+            datalen = read_varlen(trackdata)
+            data = [next(trackdata) for _ in range(datalen)]
             return SysexEvent(tick=tick, data=data)
         # not a Meta MIDI event or a Sysex event, must be a general message
         else:
@@ -153,8 +149,8 @@ class FileWriter(object):
         # is this event a Sysex Event?
         elif isinstance(event, SysexEvent):
             ret.append(0xF0)
+            ret.extend(write_varlen(len(event.data)))
             ret.extend(event.data)
-            ret.append(0xF7)
         # not a Meta MIDI event or a Sysex event, must be a general message
         elif isinstance(event, Event):
             # why in the heeeeeeeeelp would you not write the status message

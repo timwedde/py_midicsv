@@ -1,16 +1,23 @@
 ### System ###
-import re
+import struct
 
 ### Local ###
 from .midi.events import *
 
-
-def text_decode(text):
-    decoded = text
-    for octc in re.findall(r"\\(\d{3})", decoded):
-        decoded = decoded.replace(r"\%s" % octc, chr(int(octc, 8)))
-    return decoded
-
+def as_midi_bytes(text):
+    midi_bytes = b""
+    X = iter(text)
+    for c in X:
+        if c == '\\':
+            cc = next(X)
+            if cc == '\\':
+                midi_bytes += struct.pack("B",ord(cc))
+            else:
+                Nstr = cc + next(X) + next(X)
+                midi_bytes += struct.pack("B",int(Nstr,base=8))
+        else:
+            midi_bytes += struct.pack("B",ord(c))
+    return midi_bytes
 
 def to_NoteOffEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
@@ -53,42 +60,42 @@ def to_SequenceNumberMetaEvent(track, time, identifier, line):
 
 
 def to_ProgramNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return ProgramNameEvent(tick=time, data=text)
 
 
 def to_TextMetaEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return TextMetaEvent(tick=time, data=text)
 
 
 def to_CopyrightMetaEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return CopyrightMetaEvent(tick=time, data=text)
 
 
 def to_TrackNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return TrackNameEvent(tick=time, data=text)
 
 
 def to_InstrumentNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return InstrumentNameEvent(tick=time, data=text)
 
 
 def to_LyricsEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return LyricsEvent(tick=time, data=text)
 
 
 def to_MarkerEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return MarkerEvent(tick=time, data=text)
 
 
 def to_CuePointEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return CuePointEvent(tick=time, data=text)
 
 
@@ -107,7 +114,7 @@ def to_EndOfTrackEvent(track, time, identifier, line):
 
 
 def to_DeviceNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return DeviceNameEvent(tick=time, data=text)
 
 

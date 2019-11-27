@@ -1,6 +1,6 @@
 ### System ###
 import math
-
+import struct
 
 class EventRegistry(object):
     Events = {}
@@ -235,7 +235,6 @@ class SysexEvent(Event):
         return (cls.statusmsg == statusmsg or statusmsg == 0xF7)
     is_event = classmethod(is_event)
 
-
 class SequenceNumberMetaEvent(MetaEvent):
     name = 'Sequence Number'
     metacommand = 0x00
@@ -247,7 +246,7 @@ class MetaEventWithText(MetaEvent):
     def __init__(self, **kw):
         super(MetaEventWithText, self).__init__(**kw)
         if 'text' not in kw:
-            self.text = ''.join(chr(datum) for datum in self.data)
+            self.text = b''.join(struct.pack("B",datum) for datum in self.data)
 
     def __repr__(self):
         return self.__baserepr__(['text'])

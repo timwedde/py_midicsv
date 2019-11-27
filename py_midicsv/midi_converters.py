@@ -1,16 +1,20 @@
+import struct
 ### Local ###
 from .midi.events import *
 
 
-def text_encode(text):
-    encoded = ""
-    for character in text:
-        if (ord(character) < 32) or (ord(character) > 128):
-            for byte in character.encode("utf8"):
-                encoded += "\\{:03o}".format(byte)
+def as_csv_str(bytestr):
+    csv_str = ""
+    for byte in bytestr:
+        if byte < 32 or byte > 126:
+            csv_str += "\\{:03o}".format(byte)
+        elif byte == ord('"'):
+            csv_str += '""'
+        elif byte == ord('\\'):
+            csv_str += '\\\\'
         else:
-            encoded += character
-    return encoded
+            csv_str += chr(byte)
+    return csv_str
 
 
 def write_event(track, time, identifier, data):
@@ -50,35 +54,35 @@ def from_SequenceNumberMetaEvent(track, time, event):
 
 
 def from_ProgramNameEvent(track, time, event):
-    return write_event(track, time, "Program_name_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Program_name_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TextMetaEvent(track, time, event):
-    return write_event(track, time, "Text_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Text_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_CopyrightMetaEvent(track, time, event):
-    return write_event(track, time, "Copyright_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Copyright_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TrackNameEvent(track, time, event):
-    return write_event(track, time, "Title_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Title_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_InstrumentNameEvent(track, time, event):
-    return write_event(track, time, "Instrument_name_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Instrument_name_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_LyricsEvent(track, time, event):
-    return write_event(track, time, "Lyric_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Lyric_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_MarkerEvent(track, time, event):
-    return write_event(track, time, "Marker_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Marker_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_CuePointEvent(track, time, event):
-    return write_event(track, time, "Cue_point_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Cue_point_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_ChannelPrefixEvent(track, time, event):
@@ -94,7 +98,7 @@ def from_EndOfTrackEvent(track, time, event):
 
 
 def from_DeviceNameEvent(track, time, event):
-    return write_event(track, time, "Device_name_t", ['"{}"'.format(text_encode(event.text))])
+    return write_event(track, time, "Device_name_t", ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TrackLoopEvent(track, time, event):

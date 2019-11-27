@@ -40,6 +40,7 @@ class FileReader(object):
 
     def read(self, midifile):
         pattern = self.parse_file_header(midifile)
+        Pattern.useRunningStatus = False
         for track in pattern:
             self.parse_track(midifile, track)
         return pattern
@@ -59,6 +60,7 @@ class FileReader(object):
         format = data[1]
         tracks = [Track() for x in range(data[2])]
         resolution = data[3]
+        Pattern.useRunningStatus = False
         # XXX: the assumption is that any remaining bytes
         # in the header are padding
         if hdrsz > DEFAULT_MIDI_HEADER_SIZE:
@@ -117,6 +119,7 @@ class FileReader(object):
             if key not in EventRegistry.Events:
                 if not self.RunningStatus:
                     trackdata.assert_status_byte(stsmsg)
+                Pattern.useRunningStatus = True
                 key = self.RunningStatus & 0xF0
                 cls = EventRegistry.Events[key]
                 channel = self.RunningStatus & 0x0F
@@ -180,21 +183,23 @@ class FileWriter(object):
         ret.extend(write_varlen(event.tick))
         # is the event a MetaEvent?
         if isinstance(event, MetaEvent):
+            self.RunningStatus = None
             ret.append(event.statusmsg)
             ret.append(event.metacommand)
             ret.extend(write_varlen(len(event.data)))
             ret.extend(event.data)
         # is this event a Sysex Event?
         elif isinstance(event, SysexEvent):
+            self.RunningStatus = None
             ret.append(event.statusmsg)
             ret.extend(write_varlen(len(event.data)))
             ret.extend(event.data)
         # not a Meta MIDI event or a Sysex event, must be a general message
         elif isinstance(event, Event):
-            # why in the heeeeeeeeelp would you not write the status message
-            # here? doesn't matter if it's the same as last time. the byte
-            # needs to be there!
-            ret.append(event.statusmsg | event.channel)
+            status = event.statusmsg | event.channel
+            if status != self.RunningStatus or not Pattern.useRunningStatus:
+                self.RunningStatus = status
+                ret.append(status)
             ret.extend(event.data)
         else:
             raise ValueError("Unknown MIDI Event: " + str(event))

@@ -4,6 +4,8 @@ from pprint import pformat
 
 class Pattern(list):
 
+    useRunningStatus = True
+
     def __init__(self, tracks=[], resolution=220, format=1, tick_relative=True):
         self.format = format
         self.resolution = resolution

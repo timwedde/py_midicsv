@@ -24,7 +24,7 @@ class FileReader(object):
         # next two bytes specify the resolution/PPQ/Parts Per Quarter
         # (in other words, how many ticks per quater note)
         data = unpack(">LHHH", midifile.read(10))
-        hdrsz = data[0]
+        hdrsz = data[0] + 8
         format = data[1]
         tracks = [Track() for x in range(data[2])]
         resolution = data[3]

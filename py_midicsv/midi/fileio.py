@@ -4,6 +4,37 @@ from struct import unpack, pack
 from .constants import *
 from .util import *
 
+class Trackiter:
+
+    def __init__(self, iterable, pos=0):
+        self._buf = iterable
+        self._it = iter(iterable)
+        self._pos = pos
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self._pos += 1
+        return next(self._it)
+
+    def pos(self):
+        return self._pos
+
+    def errmsg(self, msg, data):
+        return "{} 0x{:02X} at position {}".format(msg, data, self.pos())
+
+    def assert_data_byte(self, data):
+        assert data & 0x80 == 0, self.errmsg("Unexpected status byte", data)
+
+    def assert_status_byte(self, data):
+        assert data & 0x80 != 0, self.errmsg("Unexpected data byte", data)
+
+    def get_data_byte(self):
+        byte = self.__next__()
+        self.assert_data_byte(byte)
+        return byte
+
 
 class FileReader(object):
 
@@ -32,6 +63,7 @@ class FileReader(object):
         # in the header are padding
         if hdrsz > DEFAULT_MIDI_HEADER_SIZE:
             midifile.read(hdrsz - DEFAULT_MIDI_HEADER_SIZE)
+        self.basepos = hdrsz
         return Pattern(tracks=tracks, resolution=resolution, format=format)
 
     def parse_track_header(self, midifile):
@@ -41,18 +73,21 @@ class FileReader(object):
             raise TypeError("Bad track header in MIDI file: ", magic)
         # next four bytes are track size
         trksz = unpack(">L", midifile.read(4))[0]
+        self.basepos += 8
         return trksz
 
     def parse_track(self, midifile, track):
         self.RunningStatus = None
         trksz = self.parse_track_header(midifile)
-        trackdata = iter(midifile.read(trksz))
+        trackdata = Trackiter(midifile.read(trksz), pos=self.basepos)
         while True:
             try:
                 event = self.parse_midi_event(trackdata)
+
                 track.append(event)
             except StopIteration:
                 break
+        self.basepos += trksz
 
     def parse_midi_event(self, trackdata):
         # first datum is varlen representing delta-time
@@ -61,17 +96,17 @@ class FileReader(object):
         stsmsg = next(trackdata)
         # is the event a MetaEvent?
         if MetaEvent.is_event(stsmsg):
-            cmd = next(trackdata)
+            cmd = trackdata.get_data_byte()
             if cmd not in EventRegistry.MetaEvents:
                 raise Warning("Unknown Meta MIDI Event: " + repr(cmd))
             cls = EventRegistry.MetaEvents[cmd]
             datalen = read_varlen(trackdata)
-            data = [next(trackdata) for _ in range(datalen)]
+            data = [next(trackdata) for x in range(datalen)]
             return cls(tick=tick, data=data)
         # is this event a Sysex Event?
         elif SysexEvent.is_event(stsmsg):
             datalen = read_varlen(trackdata)
-            data = [next(trackdata) for _ in range(datalen)]
+            data = [next(trackdata) for x in range(datalen)]
             if stsmsg not in EventRegistry.Events:
                 raise Warning("Unknown Sysex Event: {:02x}".format(stsmsg))
             cls = EventRegistry.Events[stsmsg]
@@ -80,19 +115,19 @@ class FileReader(object):
         else:
             key = stsmsg & 0xF0
             if key not in EventRegistry.Events:
-                assert self.RunningStatus, ("Bad byte value", tick, stsmsg, bytes(trackdata))
-                data = []
+                if not self.RunningStatus:
+                    trackdata.assert_status_byte(stsmsg)
                 key = self.RunningStatus & 0xF0
                 cls = EventRegistry.Events[key]
                 channel = self.RunningStatus & 0x0F
-                data.append(stsmsg)
-                data += [next(trackdata) for x in range(cls.length - 1)]
+                data = [stsmsg]
+                data += [trackdata.get_data_byte() for _ in range(cls.length-1)]
                 return cls(tick=tick, channel=channel, data=data)
             else:
                 self.RunningStatus = stsmsg
                 cls = EventRegistry.Events[key]
                 channel = self.RunningStatus & 0x0F
-                data = [next(trackdata) for x in range(cls.length)]
+                data = [trackdata.get_data_byte() for _ in range(cls.length)]
                 return cls(tick=tick, channel=channel, data=data)
         raise Warning("Unknown MIDI Event: " + repr(stsmsg))
 

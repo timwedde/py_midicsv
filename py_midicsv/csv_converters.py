@@ -1,16 +1,23 @@
 ### System ###
-import re
+import struct
 
 ### Local ###
 from .midi.events import *
 
-
-def text_decode(text):
-    decoded = text
-    for octc in re.findall(r"\\(\d{3})", decoded):
-        decoded = decoded.replace(r"\%s" % octc, chr(int(octc, 8)))
-    return decoded
-
+def as_midi_bytes(text):
+    midi_bytes = b""
+    X = iter(text)
+    for c in X:
+        if c == '\\':
+            cc = next(X)
+            if cc == '\\':
+                midi_bytes += struct.pack("B",ord(cc))
+            else:
+                Nstr = cc + next(X) + next(X)
+                midi_bytes += struct.pack("B",int(Nstr,base=8))
+        else:
+            midi_bytes += struct.pack("B",ord(c))
+    return midi_bytes
 
 def to_NoteOffEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
@@ -23,8 +30,8 @@ def to_NoteOnEvent(track, time, identifier, line):
 
 
 def to_AfterTouchEvent(track, time, identifier, line):
-    cannel, value = map(int, line)
-    return AfterTouchEvent(tick=time, channel=channel, value=value)
+    channel, pitch, value = map(int, line)
+    return AfterTouchEvent(tick=time, channel=channel, pitch=pitch, value=value)
 
 
 def to_ControlChangeEvent(track, time, identifier, line):
@@ -53,53 +60,53 @@ def to_SequenceNumberMetaEvent(track, time, identifier, line):
 
 
 def to_ProgramNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return ProgramNameEvent(tick=time, data=text)
 
 
 def to_TextMetaEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return TextMetaEvent(tick=time, data=text)
 
 
 def to_CopyrightMetaEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return CopyrightMetaEvent(tick=time, data=text)
 
 
 def to_TrackNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return TrackNameEvent(tick=time, data=text)
 
 
 def to_InstrumentNameEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return InstrumentNameEvent(tick=time, data=text)
 
 
 def to_LyricsEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return LyricsEvent(tick=time, data=text)
 
 
 def to_MarkerEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return MarkerEvent(tick=time, data=text)
 
 
 def to_CuePointEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
+    text = as_midi_bytes(line[0])
     return CuePointEvent(tick=time, data=text)
 
 
 def to_ChannelPrefixEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
-    return ChannelPrefixEvent(tick=time, data=text)
+    channel = int(line[0])
+    return ChannelPrefixEvent(tick=time, data=[channel])
 
 
 def to_PortEvent(track, time, identifier, line):
-    text = text_decode(line[0]).encode()
-    return PortEvent(tick=time, text=text)
+    port = int(line[0])
+    return PortEvent(tick=time, data=[port])
 
 
 def to_EndOfTrackEvent(track, time, identifier, line):
@@ -107,7 +114,8 @@ def to_EndOfTrackEvent(track, time, identifier, line):
 
 
 def to_DeviceNameEvent(track, time, identifier, line):
-    return DeviceNameEvent(tick=time)
+    text = as_midi_bytes(line[0])
+    return DeviceNameEvent(tick=time, data=text)
 
 
 def to_TrackLoopEvent(track, time, identifier, line):
@@ -120,7 +128,8 @@ def to_SetTempoEvent(track, time, identifier, line):
 
 
 def to_SmpteOffsetEvent(track, time, identifier, line):
-    return SmpteOffsetEvent(tick=time)
+    hr, mn, se, fr, ff = map(int, line)
+    return SmpteOffsetEvent(tick=time, hr=hr, mn=mn, se=se, fr=fr, ff=ff)
 
 
 def to_TimeSignatureEvent(track, time, identifier, line):
@@ -133,11 +142,20 @@ def to_KeySignatureEvent(track, time, identifier, line):
     return KeySignatureEvent(tick=time, alternatives=key, minor=major)
 
 
+def hx(s):
+    return int(s,16)
+
+
 def to_SequencerSpecificEvent(track, time, identifier, line):
-    length, text = int(line[0]), text_decode(line[1]).encode()
-    return SequencerSpecificEvent(tick=time, data=text)
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
+    return SequencerSpecificEvent(tick=time, data=data)
 
 
 def to_SysexEvent(track, time, identifier, line):
-    length, data = int(line[0]), [int(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
     return SysexEvent(tick=time, data=data)
+
+
+def to_SysexF7Event(track, time, identifier, line):
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]
+    return SysexF7Event(tick=time, data=data)

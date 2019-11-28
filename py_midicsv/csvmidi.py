@@ -36,6 +36,7 @@ def parse(file):
         time = int(line[1])
         identifier = line[2].strip()
         if identifier == "Header":
+            pattern.format = int(line[3])
             pattern.resolution = int(line[5])
         elif identifier == "End_of_file":
             continue

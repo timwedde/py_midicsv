@@ -1,13 +1,13 @@
 ### System ###
 import math
-
+import struct
 
 class EventRegistry(object):
     Events = {}
     MetaEvents = {}
 
     def register_event(cls, event, bases):
-        if (Event in bases) or (NoteEvent in bases):
+        if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
             assert event.statusmsg not in cls.Events, \
                 "Event %s already registered" % event.name
             cls.Events[event.statusmsg] = event
@@ -200,14 +200,14 @@ class ProgramChangeEvent(Event):
 
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
-    length = 2
+    length = 1
     name = 'Channel After Touch'
 
     def set_value(self, val):
-        self.data[1] = val
+        self.data[0] = val
 
     def get_value(self):
-        return self.data[1]
+        return self.data[0]
     value = property(get_value, set_value)
 
 
@@ -232,9 +232,8 @@ class SysexEvent(Event):
     length = 'varlen'
 
     def is_event(cls, statusmsg):
-        return (cls.statusmsg == statusmsg or statusmsg == 0xF9)
+        return (cls.statusmsg == statusmsg or statusmsg == 0xF7)
     is_event = classmethod(is_event)
-
 
 class SequenceNumberMetaEvent(MetaEvent):
     name = 'Sequence Number'
@@ -247,7 +246,7 @@ class MetaEventWithText(MetaEvent):
     def __init__(self, **kw):
         super(MetaEventWithText, self).__init__(**kw)
         if 'text' not in kw:
-            self.text = ''.join(chr(datum) for datum in self.data)
+            self.text = b''.join(struct.pack("B",datum) for datum in self.data)
 
     def __repr__(self):
         return self.__baserepr__(['text'])
@@ -301,9 +300,10 @@ class ProgramNameEvent(MetaEventWithText):
     length = 'varlen'
 
 
-class DeviceNameEvent(MetaEvent):
+class DeviceNameEvent(MetaEventWithText):
     name = 'Device Name'
     metacommand = 0x09
+    length = 'varlen'
 
 
 class ChannelPrefixEvent(MetaEvent):
@@ -352,7 +352,42 @@ class SetTempoEvent(MetaEvent):
 class SmpteOffsetEvent(MetaEvent):
     name = 'SMPTE Offset'
     metacommand = 0x54
+    length = 5
 
+    def get_hr(self):
+        return self.data[0]
+
+    def set_hr(self, val):
+        self.data[0] = val
+    hr = property(get_hr, set_hr)
+
+    def get_mn(self):
+        return self.data[1]
+
+    def set_mn(self, val):
+        self.data[1] = val
+    mn = property(get_mn, set_mn)
+
+    def get_se(self):
+        return self.data[2]
+
+    def set_se(self, val):
+        self.data[2] = val
+    se = property(get_se, set_se)
+
+    def get_fr(self):
+        return self.data[3]
+
+    def set_fr(self, val):
+        self.data[3] = val
+    fr = property(get_fr, set_fr)
+
+    def get_ff(self):
+        return self.data[4]
+
+    def set_ff(self, val):
+        self.data[4] = val
+    ff = property(get_ff, set_ff)
 
 class TimeSignatureEvent(MetaEvent):
     name = 'Time Signature'
@@ -412,3 +447,9 @@ class KeySignatureEvent(MetaEvent):
 class SequencerSpecificEvent(MetaEvent):
     name = 'Sequencer Specific'
     metacommand = 0x7F
+    length = 'varlen'
+
+
+class SysexF7Event(SysexEvent):
+    statusmsg = 0xF7
+    name = 'SysExF7'

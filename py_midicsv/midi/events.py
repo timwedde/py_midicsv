@@ -1,6 +1,7 @@
 ### System ###
-import math
 import struct
+from functools import total_ordering
+
 
 class EventRegistry(object):
     Events = {}
@@ -23,11 +24,12 @@ class EventRegistry(object):
 class AutoRegister(type):
 
     def __init__(cls, name, bases, dict):
-        if name not in {'AbstractEvent', 'Event', 'MetaEvent', 'NoteEvent',
-                        'MetaEventWithText'}:
+        if name not in {"AbstractEvent", "Event", "MetaEvent", "NoteEvent",
+                        "MetaEventWithText"}:
             EventRegistry.register_event(cls, bases)
 
 
+@total_ordering
 class AbstractEvent(object, metaclass=AutoRegister):
     name = "Generic MIDI Event"
     length = 0
@@ -43,50 +45,53 @@ class AbstractEvent(object, metaclass=AutoRegister):
         for key in kw:
             setattr(self, key, kw[key])
 
-    def __cmp__(self, other):
-        if self.tick < other.tick:
-            return -1
-        elif self.tick > other.tick:
-            return 1
-        return cmp(self.data, other.data)
+    def __eq__(self, other):
+        return (self.tick, self.data) == (other.tick, other.data)
+
+    def __lt__(self, other):
+        if self.tick and other.tick:
+            return self.tick < other.tick
+        return self.data < other.data
 
     def __baserepr__(self, keys=[]):
-        keys = ['tick'] + keys + ['data']
+        keys = ["tick"] + keys + ["data"]
         body = []
         for key in keys:
             val = getattr(self, key)
             keyval = "%s=%r" % (key, val)
             body.append(keyval)
-        body = str.join(', ', body)
+        body = str.join(", ", body)
         return "midi.%s(%s)" % (self.__class__.__name__, body)
 
     def __repr__(self):
         return self.__baserepr__()
 
 
+@total_ordering
 class Event(AbstractEvent):
-    name = 'Event'
+    name = "Event"
 
     def __init__(self, **kw):
-        if 'channel' not in kw:
+        if "channel" not in kw:
             kw = kw.copy()
-            kw['channel'] = 0
+            kw["channel"] = 0
         super(Event, self).__init__(**kw)
 
     def copy(self, **kw):
-        _kw = {'channel': self.channel, 'tick': self.tick, 'data': self.data}
+        _kw = {"channel": self.channel, "tick": self.tick, "data": self.data}
         _kw.update(kw)
         return self.__class__(**_kw)
 
-    def __cmp__(self, other):
-        if self.tick < other.tick:
-            return -1
-        elif self.tick > other.tick:
-            return 1
-        return 0
+    def __eq__(self, other):
+        return (self.channel, self.tick, self.data) == (other.channel, other.tick, other.data)  # noqa: E501
+
+    def __lt__(self, other):
+        if self.tick and other.tick:
+            return self.tick < other.tick
+        return self.data < other.data
 
     def __repr__(self):
-        return self.__baserepr__(['channel'])
+        return self.__baserepr__(["channel"])
 
     def is_event(cls, statusmsg):
         return (cls.statusmsg == (statusmsg & 0xF0))
@@ -103,7 +108,7 @@ as the Meta events.
 class MetaEvent(AbstractEvent):
     statusmsg = 0xFF
     metacommand = 0x0
-    name = 'Meta Event'
+    name = "Meta Event"
 
     def is_event(cls, statusmsg):
         return (statusmsg == 0xFF)
@@ -137,18 +142,18 @@ class NoteEvent(Event):
 
 class NoteOnEvent(NoteEvent):
     statusmsg = 0x90
-    name = 'Note On'
+    name = "Note On"
 
 
 class NoteOffEvent(NoteEvent):
     statusmsg = 0x80
-    name = 'Note Off'
+    name = "Note Off"
 
 
 class AfterTouchEvent(Event):
     statusmsg = 0xA0
     length = 2
-    name = 'After Touch'
+    name = "After Touch"
 
     def get_pitch(self):
         return self.data[0]
@@ -168,7 +173,7 @@ class AfterTouchEvent(Event):
 class ControlChangeEvent(Event):
     statusmsg = 0xB0
     length = 2
-    name = 'Control Change'
+    name = "Control Change"
 
     def set_control(self, val):
         self.data[0] = val
@@ -188,7 +193,7 @@ class ControlChangeEvent(Event):
 class ProgramChangeEvent(Event):
     statusmsg = 0xC0
     length = 1
-    name = 'Program Change'
+    name = "Program Change"
 
     def set_value(self, val):
         self.data[0] = val
@@ -201,7 +206,7 @@ class ProgramChangeEvent(Event):
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
     length = 1
-    name = 'Channel After Touch'
+    name = "Channel After Touch"
 
     def set_value(self, val):
         self.data[0] = val
@@ -214,7 +219,7 @@ class ChannelAfterTouchEvent(Event):
 class PitchWheelEvent(Event):
     statusmsg = 0xE0
     length = 2
-    name = 'Pitch Wheel'
+    name = "Pitch Wheel"
 
     def get_pitch(self):
         return ((self.data[1] << 7) | self.data[0]) - 0x2000
@@ -228,15 +233,16 @@ class PitchWheelEvent(Event):
 
 class SysexEvent(Event):
     statusmsg = 0xF0
-    name = 'SysEx'
-    length = 'varlen'
+    name = "SysEx"
+    length = "varlen"
 
     def is_event(cls, statusmsg):
         return (cls.statusmsg == statusmsg or statusmsg == 0xF7)
     is_event = classmethod(is_event)
 
+
 class SequenceNumberMetaEvent(MetaEvent):
-    name = 'Sequence Number'
+    name = "Sequence Number"
     metacommand = 0x00
     length = 2
 
@@ -245,90 +251,90 @@ class MetaEventWithText(MetaEvent):
 
     def __init__(self, **kw):
         super(MetaEventWithText, self).__init__(**kw)
-        if 'text' not in kw:
-            self.text = b''.join(struct.pack("B",datum) for datum in self.data)
+        if "text" not in kw:
+            self.text = b"".join(struct.pack("B", datum) for datum in self.data)
 
     def __repr__(self):
-        return self.__baserepr__(['text'])
+        return self.__baserepr__(["text"])
 
 
 class TextMetaEvent(MetaEventWithText):
-    name = 'Text'
+    name = "Text"
     metacommand = 0x01
-    length = 'varlen'
+    length = "varlen"
 
 
 class CopyrightMetaEvent(MetaEventWithText):
-    name = 'Copyright Notice'
+    name = "Copyright Notice"
     metacommand = 0x02
-    length = 'varlen'
+    length = "varlen"
 
 
 class TrackNameEvent(MetaEventWithText):
-    name = 'Track Name'
+    name = "Track Name"
     metacommand = 0x03
-    length = 'varlen'
+    length = "varlen"
 
 
 class InstrumentNameEvent(MetaEventWithText):
-    name = 'Instrument Name'
+    name = "Instrument Name"
     metacommand = 0x04
-    length = 'varlen'
+    length = "varlen"
 
 
 class LyricsEvent(MetaEventWithText):
-    name = 'Lyrics'
+    name = "Lyrics"
     metacommand = 0x05
-    length = 'varlen'
+    length = "varlen"
 
 
 class MarkerEvent(MetaEventWithText):
-    name = 'Marker'
+    name = "Marker"
     metacommand = 0x06
-    length = 'varlen'
+    length = "varlen"
 
 
 class CuePointEvent(MetaEventWithText):
-    name = 'Cue Point'
+    name = "Cue Point"
     metacommand = 0x07
-    length = 'varlen'
+    length = "varlen"
 
 
 class ProgramNameEvent(MetaEventWithText):
-    name = 'Program Name'
+    name = "Program Name"
     metacommand = 0x08
-    length = 'varlen'
+    length = "varlen"
 
 
 class DeviceNameEvent(MetaEventWithText):
-    name = 'Device Name'
+    name = "Device Name"
     metacommand = 0x09
-    length = 'varlen'
+    length = "varlen"
 
 
 class ChannelPrefixEvent(MetaEvent):
-    name = 'Channel Prefix'
+    name = "Channel Prefix"
     metacommand = 0x20
     length = 1
 
 
 class PortEvent(MetaEvent):
-    name = 'MIDI Port/Cable'
+    name = "MIDI Port/Cable"
     metacommand = 0x21
 
 
 class TrackLoopEvent(MetaEvent):
-    name = 'Track Loop'
+    name = "Track Loop"
     metacommand = 0x2E
 
 
 class EndOfTrackEvent(MetaEvent):
-    name = 'End of Track'
+    name = "End of Track"
     metacommand = 0x2F
 
 
 class SetTempoEvent(MetaEvent):
-    name = 'Set Tempo'
+    name = "Set Tempo"
     metacommand = 0x51
     length = 3
 
@@ -350,7 +356,7 @@ class SetTempoEvent(MetaEvent):
 
 
 class SmpteOffsetEvent(MetaEvent):
-    name = 'SMPTE Offset'
+    name = "SMPTE Offset"
     metacommand = 0x54
     length = 5
 
@@ -389,8 +395,9 @@ class SmpteOffsetEvent(MetaEvent):
         self.data[4] = val
     ff = property(get_ff, set_ff)
 
+
 class TimeSignatureEvent(MetaEvent):
-    name = 'Time Signature'
+    name = "Time Signature"
     metacommand = 0x58
     length = 4
 
@@ -424,7 +431,7 @@ class TimeSignatureEvent(MetaEvent):
 
 
 class KeySignatureEvent(MetaEvent):
-    name = 'Key Signature'
+    name = "Key Signature"
     metacommand = 0x59
     length = 2
 
@@ -445,11 +452,11 @@ class KeySignatureEvent(MetaEvent):
 
 
 class SequencerSpecificEvent(MetaEvent):
-    name = 'Sequencer Specific'
+    name = "Sequencer Specific"
     metacommand = 0x7F
-    length = 'varlen'
+    length = "varlen"
 
 
 class SysexF7Event(SysexEvent):
     statusmsg = 0xF7
-    name = 'SysExF7'
+    name = "SysExF7"

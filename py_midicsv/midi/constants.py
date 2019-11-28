@@ -1,7 +1,7 @@
 OCTAVE_MAX_VALUE = 12
 OCTAVE_VALUES = list(range(OCTAVE_MAX_VALUE))
 
-NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 WHITE_KEYS = [0, 2, 4, 5, 7, 9, 11]
 BLACK_KEYS = [1, 3, 6, 8, 10]
 NOTE_PER_OCTAVE = len(NOTE_NAMES)
@@ -17,21 +17,27 @@ for value in range(128):
     name = NOTE_NAMES[noteidx]
     if len(name) == 2:
         # sharp note
-        flat = NOTE_NAMES[noteidx + 1] + 'b'
-        NOTE_NAME_MAP_FLAT['%s_%d' % (flat, octidx)] = value
-        NOTE_NAME_MAP_SHARP['%s_%d' % (name, octidx)] = value
-        NOTE_VALUE_MAP_FLAT.append('%s_%d' % (flat, octidx))
-        NOTE_VALUE_MAP_SHARP.append('%s_%d' % (name, octidx))
-        globals()['%s_%d' % (name[0] + '#', octidx)] = value
-        globals()['%s_%d' % (flat, octidx)] = value
+        flat = NOTE_NAMES[noteidx + 1] + "b"
+        NOTE_NAME_MAP_FLAT["{}_{}".format(flat, octidx)] = value
+        NOTE_NAME_MAP_SHARP["{}_{}".format(name, octidx)] = value
+        NOTE_VALUE_MAP_FLAT.append("{}_{}".format(flat, octidx))
+        NOTE_VALUE_MAP_SHARP.append("{}_{}".format(name, octidx))
+        globals()["{}_{}".format(name[0] + "#", octidx)] = value
+        globals()["{}_{}".format(flat, octidx)] = value
     else:
-        NOTE_NAME_MAP_FLAT['%s_%d' % (name, octidx)] = value
-        NOTE_NAME_MAP_SHARP['%s_%d' % (name, octidx)] = value
-        NOTE_VALUE_MAP_FLAT.append('%s_%d' % (name, octidx))
-        NOTE_VALUE_MAP_SHARP.append('%s_%d' % (name, octidx))
-        globals()['%s_%d' % (name, octidx)] = value
+        NOTE_NAME_MAP_FLAT["%s_%d" % (name, octidx)] = value
+        NOTE_NAME_MAP_SHARP["%s_%d" % (name, octidx)] = value
+        NOTE_VALUE_MAP_FLAT.append("%s_%d" % (name, octidx))
+        NOTE_VALUE_MAP_SHARP.append("%s_%d" % (name, octidx))
+        globals()["%s_%d" % (name, octidx)] = value
 
-BEATNAMES = ['whole', 'half', 'quarter', 'eighth', 'sixteenth', 'thiry-second', 'sixty-fourth']
+BEATNAMES = ["whole",
+             "half",
+             "quarter",
+             "eighth",
+             "sixteenth",
+             "thirty-second",
+             "sixty-fourth"]
 BEATVALUES = [4, 2, 1, .5, .25, .125, .0625]
 WHOLE = 0
 HALF = 1

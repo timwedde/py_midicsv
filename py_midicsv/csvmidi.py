@@ -1,12 +1,10 @@
 ### System ###
 import csv
-from io import StringIO, BytesIO
 
 ### Local ###
 from .midi.events import *
 from .midi.containers import *
 from .events import csv_to_midi_map
-from .midi.fileio import FileWriter
 
 COMMENT_DELIMITERS = ("#", ";")
 
@@ -15,7 +13,8 @@ def parse(file):
     """Parses a CSV file into MIDI format.
 
     Args:
-        file: A string giving the path to a file on disk or an open file-like object.
+        file: A string giving the path to a file on disk or
+              an open file-like object.
 
     Returns:
         A Pattern() object containing the byte-representations as parsed from

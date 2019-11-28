@@ -4,39 +4,45 @@ import struct
 ### Local ###
 from .midi.events import *
 
+
 def as_midi_bytes(text):
     midi_bytes = b""
     X = iter(text)
     for c in X:
-        if c == '\\':
+        if c == "\\":
             cc = next(X)
-            if cc == '\\':
-                midi_bytes += struct.pack("B",ord(cc))
+            if cc == "\\":
+                midi_bytes += struct.pack("B", ord(cc))
             else:
                 Nstr = cc + next(X) + next(X)
-                midi_bytes += struct.pack("B",int(Nstr,base=8))
+                midi_bytes += struct.pack("B", int(Nstr, base=8))
         else:
-            midi_bytes += struct.pack("B",ord(c))
+            midi_bytes += struct.pack("B", ord(c))
     return midi_bytes
+
 
 def to_NoteOffEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
-    return NoteOffEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
+    return NoteOffEvent(tick=time, channel=channel,
+                        pitch=pitch, velocity=velocity)
 
 
 def to_NoteOnEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
-    return NoteOnEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
+    return NoteOnEvent(tick=time, channel=channel,
+                       pitch=pitch, velocity=velocity)
 
 
 def to_AfterTouchEvent(track, time, identifier, line):
     channel, pitch, value = map(int, line)
-    return AfterTouchEvent(tick=time, channel=channel, pitch=pitch, value=value)
+    return AfterTouchEvent(tick=time, channel=channel,
+                           pitch=pitch, value=value)
 
 
 def to_ControlChangeEvent(track, time, identifier, line):
     channel, control, value = map(int, line)
-    return ControlChangeEvent(tick=time, channel=channel, control=control, value=value)
+    return ControlChangeEvent(tick=time, channel=channel,
+                              control=control, value=value)
 
 
 def to_ProgramChangeEvent(track, time, identifier, line):
@@ -134,7 +140,9 @@ def to_SmpteOffsetEvent(track, time, identifier, line):
 
 def to_TimeSignatureEvent(track, time, identifier, line):
     num, denom, click, notesq = map(int, line)
-    return TimeSignatureEvent(tick=time, numerator=num, denominator=denom, metronome=click, thirtyseconds=notesq)
+    return TimeSignatureEvent(tick=time, numerator=num,
+                              denominator=denom, metronome=click,
+                              thirtyseconds=notesq)
 
 
 def to_KeySignatureEvent(track, time, identifier, line):
@@ -143,19 +151,19 @@ def to_KeySignatureEvent(track, time, identifier, line):
 
 
 def hx(s):
-    return int(s,16)
+    return int(s, 16)
 
 
 def to_SequencerSpecificEvent(track, time, identifier, line):
-    length, data = hx(line[0]), [hx(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]  # noqa: F841
     return SequencerSpecificEvent(tick=time, data=data)
 
 
 def to_SysexEvent(track, time, identifier, line):
-    length, data = hx(line[0]), [hx(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]  # noqa: F841
     return SysexEvent(tick=time, data=data)
 
 
 def to_SysexF7Event(track, time, identifier, line):
-    length, data = hx(line[0]), [hx(item) for item in line[1:]]
+    length, data = hx(line[0]), [hx(item) for item in line[1:]]  # noqa: F841
     return SysexF7Event(tick=time, data=data)

@@ -59,42 +59,42 @@ def from_SequenceNumberMetaEvent(track, time, event):
 
 def from_ProgramNameEvent(track, time, event):
     return write_event(track, time, "Program_name_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TextMetaEvent(track, time, event):
     return write_event(track, time, "Text_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_CopyrightMetaEvent(track, time, event):
     return write_event(track, time, "Copyright_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TrackNameEvent(track, time, event):
     return write_event(track, time, "Title_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_InstrumentNameEvent(track, time, event):
     return write_event(track, time, "Instrument_name_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_LyricsEvent(track, time, event):
     return write_event(track, time, "Lyric_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_MarkerEvent(track, time, event):
     return write_event(track, time, "Marker_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_CuePointEvent(track, time, event):
     return write_event(track, time, "Cue_point_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_ChannelPrefixEvent(track, time, event):
@@ -112,7 +112,7 @@ def from_EndOfTrackEvent(track, time, event):
 
 def from_DeviceNameEvent(track, time, event):
     return write_event(track, time, "Device_name_t",
-                       [""{}"".format(as_csv_str(event.text))])
+                       ['"{}"'.format(as_csv_str(event.text))])
 
 
 def from_TrackLoopEvent(track, time, event):

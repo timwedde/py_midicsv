@@ -1,0 +1,84 @@
+version: 2.1
+
+commands:
+  build-and-test:
+    description: "Install, build and test the library"
+    steps:
+      - run:
+          name: "Install into environment"
+          command: |
+            poetry install
+      - run:
+          name: "Lint library and tests"
+          command: |
+            poetry run flake8 py_midicsv tests
+
+jobs:
+  test-37:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - build-and-test
+  test-36:
+    docker:
+      - image: circleci/python:3.6
+    steps:
+      - checkout
+      - build-and-test
+  test-35:
+    docker:
+      - image: circleci/python:3.5
+    steps:
+      - checkout
+      - build-and-test
+
+  deploy:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run:
+          name: Publish
+          command: |
+            poetry publish --build --username "${PYPI_USERNAME}" --password "${PYPI_PASSWORD}" --no-interaction
+
+workflows:
+    version: 2
+
+    test-workflow:
+      jobs:
+        - test-37
+        - test-36
+        - test-35
+
+    deploy-workflow:
+      jobs:
+        - test-37:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
+        - test-36:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
+        - test-35:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
+        - deploy:
+            requires:
+              - test-37
+              - test-36
+              - test-35
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/

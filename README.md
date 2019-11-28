@@ -1,4 +1,8 @@
 # py_midicsv
+
+[![CircleCI](https://circleci.com/gh/timwedde/py_midicsv.svg?style=svg)](https://circleci.com/gh/timwedde/py_midicsv)
+[![codecov](https://codecov.io/gh/timwedde/py_midicsv/branch/master/graph/badge.svg)](https://codecov.io/gh/timwedde/py_midicsv)
+
 A Python library inspired by the midicsv tool (originally found [here](http://www.fourmilab.ch/webtools/midicsv/)).
 
 ## Disclaimer

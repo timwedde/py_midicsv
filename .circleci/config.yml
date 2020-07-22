@@ -11,9 +11,15 @@ commands:
       - run:
           name: "Lint library and tests"
           command: |
-            poetry run flake8 py_midicsv tests
+            poetry run flake8 py_midicsv
 
 jobs:
+  test-38:
+    docker:
+      - image: circleci/python:3.8
+    steps:
+      - checkout
+      - build-and-test
   test-37:
     docker:
       - image: circleci/python:3.7
@@ -26,16 +32,10 @@ jobs:
     steps:
       - checkout
       - build-and-test
-  test-35:
-    docker:
-      - image: circleci/python:3.5
-    steps:
-      - checkout
-      - build-and-test
 
   deploy:
     docker:
-      - image: circleci/python:3.7
+      - image: circleci/python:3.8
     steps:
       - checkout
       - run:
@@ -48,12 +48,18 @@ workflows:
 
     test-workflow:
       jobs:
+        - test-38
         - test-37
         - test-36
-        - test-35
 
     deploy-workflow:
       jobs:
+        - test-38:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
         - test-37:
             filters:
               tags:
@@ -66,17 +72,11 @@ workflows:
                 only: /v[0-9]+(\.[0-9]+)*/
               branches:
                 ignore: /.*/
-        - test-35:
-            filters:
-              tags:
-                only: /v[0-9]+(\.[0-9]+)*/
-              branches:
-                ignore: /.*/
         - deploy:
             requires:
+              - test-38
               - test-37
               - test-36
-              - test-35
             filters:
               tags:
                 only: /v[0-9]+(\.[0-9]+)*/

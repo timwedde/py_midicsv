@@ -128,6 +128,8 @@ def from_SmpteOffsetEvent(track, time, event):
 
 
 def from_TimeSignatureEvent(track, time, event):
+    if len(event.data) == 2:
+        event.data.extend((24, 8))
     return write_event(track, time, "Time_signature", [*event.data])
 
 

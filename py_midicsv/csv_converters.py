@@ -139,10 +139,10 @@ def to_SmpteOffsetEvent(track, time, identifier, line):
 
 
 def to_TimeSignatureEvent(track, time, identifier, line):
-    num, denom, click, notesq = map(int, line)
-    return TimeSignatureEvent(tick=time, numerator=num,
-                              denominator=denom, metronome=click,
-                              thirtyseconds=notesq)
+    data = {i: val for i, val in enumerate(map(int, line))}
+    return TimeSignatureEvent(tick=time, numerator=data.get(0),
+                              denominator=data.get(1), metronome=data.get(2, 24),
+                              thirtyseconds=data.get(3, 8))
 
 
 def to_KeySignatureEvent(track, time, identifier, line):

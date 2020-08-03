@@ -9,7 +9,7 @@ repository = "https://github.com/timwedde/py_midicsv"
 homepage = "https://github.com/timwedde/py_midicsv"
 
 [tool.poetry.dependencies]
-python = "^3.5"
+python = "^3.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.7"

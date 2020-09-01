@@ -9,23 +9,20 @@ class EventRegistry(object):
 
     def register_event(cls, event, bases):
         if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
-            assert event.statusmsg not in cls.Events, \
-                "Event %s already registered" % event.name
+            assert event.statusmsg not in cls.Events, "Event %s already registered" % event.name
             cls.Events[event.statusmsg] = event
         elif (MetaEvent in bases) or (MetaEventWithText in bases):
-            assert event.metacommand not in cls.MetaEvents, \
-                "Event %s already registered" % event.name
+            assert event.metacommand not in cls.MetaEvents, "Event %s already registered" % event.name
             cls.MetaEvents[event.metacommand] = event
         else:
             raise ValueError("Unknown bases class in event type: " + event.name)
+
     register_event = classmethod(register_event)
 
 
 class AutoRegister(type):
-
     def __init__(cls, name, bases, dict):
-        if name not in {"AbstractEvent", "Event", "MetaEvent", "NoteEvent",
-                        "MetaEventWithText"}:
+        if name not in {"AbstractEvent", "Event", "MetaEvent", "NoteEvent", "MetaEventWithText"}:
             EventRegistry.register_event(cls, bases)
 
 
@@ -94,7 +91,8 @@ class Event(AbstractEvent):
         return self.__baserepr__(["channel"])
 
     def is_event(cls, statusmsg):
-        return (cls.statusmsg == (statusmsg & 0xF0))
+        return cls.statusmsg == (statusmsg & 0xF0)
+
     is_event = classmethod(is_event)
 
 
@@ -111,7 +109,8 @@ class MetaEvent(AbstractEvent):
     name = "Meta Event"
 
     def is_event(cls, statusmsg):
-        return (statusmsg == 0xFF)
+        return statusmsg == 0xFF
+
     is_event = classmethod(is_event)
 
 
@@ -130,6 +129,7 @@ class NoteEvent(Event):
 
     def set_pitch(self, val):
         self.data[0] = val
+
     pitch = property(get_pitch, set_pitch)
 
     def get_velocity(self):
@@ -137,6 +137,7 @@ class NoteEvent(Event):
 
     def set_velocity(self, val):
         self.data[1] = val
+
     velocity = property(get_velocity, set_velocity)
 
 
@@ -160,6 +161,7 @@ class AfterTouchEvent(Event):
 
     def set_pitch(self, val):
         self.data[0] = val
+
     pitch = property(get_pitch, set_pitch)
 
     def get_value(self):
@@ -167,6 +169,7 @@ class AfterTouchEvent(Event):
 
     def set_value(self, val):
         self.data[1] = val
+
     value = property(get_value, set_value)
 
 
@@ -180,6 +183,7 @@ class ControlChangeEvent(Event):
 
     def get_control(self):
         return self.data[0]
+
     control = property(get_control, set_control)
 
     def set_value(self, val):
@@ -187,6 +191,7 @@ class ControlChangeEvent(Event):
 
     def get_value(self):
         return self.data[1]
+
     value = property(get_value, set_value)
 
 
@@ -200,6 +205,7 @@ class ProgramChangeEvent(Event):
 
     def get_value(self):
         return self.data[0]
+
     value = property(get_value, set_value)
 
 
@@ -213,6 +219,7 @@ class ChannelAfterTouchEvent(Event):
 
     def get_value(self):
         return self.data[0]
+
     value = property(get_value, set_value)
 
 
@@ -228,6 +235,7 @@ class PitchWheelEvent(Event):
         value = pitch + 0x2000
         self.data[0] = value & 0x7F
         self.data[1] = (value >> 7) & 0x7F
+
     pitch = property(get_pitch, set_pitch)
 
 
@@ -237,7 +245,8 @@ class SysexEvent(Event):
     length = "varlen"
 
     def is_event(cls, statusmsg):
-        return (cls.statusmsg == statusmsg or statusmsg == 0xF7)
+        return cls.statusmsg == statusmsg or statusmsg == 0xF7
+
     is_event = classmethod(is_event)
 
 
@@ -248,7 +257,6 @@ class SequenceNumberMetaEvent(MetaEvent):
 
 
 class MetaEventWithText(MetaEvent):
-
     def __init__(self, **kw):
         super(MetaEventWithText, self).__init__(**kw)
         if "text" not in kw:
@@ -343,15 +351,17 @@ class SetTempoEvent(MetaEvent):
 
     def get_bpm(self):
         return float(6e7) / self.mpqn
+
     bpm = property(get_bpm, set_bpm)
 
     def get_mpqn(self):
-        assert(len(self.data) == 3)
+        assert len(self.data) == 3
         vals = [self.data[x] << (16 - (8 * x)) for x in range(3)]
         return sum(vals)
 
     def set_mpqn(self, val):
         self.data = [(val >> (16 - (8 * x)) & 0xFF) for x in range(3)]
+
     mpqn = property(get_mpqn, set_mpqn)
 
 
@@ -365,6 +375,7 @@ class SmpteOffsetEvent(MetaEvent):
 
     def set_hr(self, val):
         self.data[0] = val
+
     hr = property(get_hr, set_hr)
 
     def get_mn(self):
@@ -372,6 +383,7 @@ class SmpteOffsetEvent(MetaEvent):
 
     def set_mn(self, val):
         self.data[1] = val
+
     mn = property(get_mn, set_mn)
 
     def get_se(self):
@@ -379,6 +391,7 @@ class SmpteOffsetEvent(MetaEvent):
 
     def set_se(self, val):
         self.data[2] = val
+
     se = property(get_se, set_se)
 
     def get_fr(self):
@@ -386,6 +399,7 @@ class SmpteOffsetEvent(MetaEvent):
 
     def set_fr(self, val):
         self.data[3] = val
+
     fr = property(get_fr, set_fr)
 
     def get_ff(self):
@@ -393,6 +407,7 @@ class SmpteOffsetEvent(MetaEvent):
 
     def set_ff(self, val):
         self.data[4] = val
+
     ff = property(get_ff, set_ff)
 
 
@@ -406,6 +421,7 @@ class TimeSignatureEvent(MetaEvent):
 
     def set_numerator(self, val):
         self.data[0] = val
+
     numerator = property(get_numerator, set_numerator)
 
     def get_denominator(self):
@@ -413,6 +429,7 @@ class TimeSignatureEvent(MetaEvent):
 
     def set_denominator(self, val):
         self.data[1] = val
+
     denominator = property(get_denominator, set_denominator)
 
     def get_metronome(self):
@@ -420,6 +437,7 @@ class TimeSignatureEvent(MetaEvent):
 
     def set_metronome(self, val):
         self.data[2] = val
+
     metronome = property(get_metronome, set_metronome)
 
     def get_thirtyseconds(self):
@@ -427,6 +445,7 @@ class TimeSignatureEvent(MetaEvent):
 
     def set_thirtyseconds(self, val):
         self.data[3] = val
+
     thirtyseconds = property(get_thirtyseconds, set_thirtyseconds)
 
 
@@ -441,6 +460,7 @@ class KeySignatureEvent(MetaEvent):
 
     def set_alternatives(self, val):
         self.data[0] = 256 + val if val < 0 else val
+
     alternatives = property(get_alternatives, set_alternatives)
 
     def get_minor(self):
@@ -448,6 +468,7 @@ class KeySignatureEvent(MetaEvent):
 
     def set_minor(self, val):
         self.data[1] = val
+
     minor = property(get_minor, set_minor)
 
 

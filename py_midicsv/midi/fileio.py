@@ -6,7 +6,6 @@ from .util import *
 
 
 class Trackiter:
-
     def __init__(self, iterable, pos=0):
         self._buf = iterable
         self._it = iter(iterable)
@@ -38,7 +37,6 @@ class Trackiter:
 
 
 class FileReader(object):
-
     def read(self, midifile):
         pattern = self.parse_file_header(midifile)
         Pattern.useRunningStatus = False
@@ -151,10 +149,7 @@ class FileWriter(object):
         if length is None:
             length = len(pattern)
         # First four bytes are MIDI header
-        packdata = pack(">LHHH", 6,
-                        pattern.format,
-                        length,
-                        pattern.resolution)
+        packdata = pack(">LHHH", 6, pattern.format, length, pattern.resolution)
         self.file.write(b"MThd" + packdata)
 
     def write_track(self, track):

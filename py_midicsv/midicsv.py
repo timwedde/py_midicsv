@@ -20,9 +20,7 @@ def parse(file):
     """
     csv_file = []
     pattern = read_midifile(file)
-    csv_file.append("0, 0, Header, {}, {}, {}\n".format(pattern.format,
-                                                        len(pattern),
-                                                        pattern.resolution))
+    csv_file.append("0, 0, Header, {}, {}, {}\n".format(pattern.format, len(pattern), pattern.resolution))
     for index, track in enumerate(pattern):
         csv_file.append("{}, {}, Start_track\n".format(index + 1, 0))
         abstime = 0

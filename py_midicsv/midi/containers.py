@@ -13,8 +13,11 @@ class Pattern(list):
         super(Pattern, self).__init__(tracks)
 
     def __repr__(self):
-        return "midi.Pattern(format=%r, resolution=%r, tracks=\\\n%s)" % \
-            (self.format, self.resolution, pformat(list(self)))
+        return "midi.Pattern(format=%r, resolution=%r, tracks=\\\n%s)" % (
+            self.format,
+            self.resolution,
+            pformat(list(self)),
+        )
 
     def make_ticks_abs(self):
         self.tick_relative = False
@@ -29,8 +32,11 @@ class Pattern(list):
     def __getitem__(self, item):
         if isinstance(item, slice):
             indices = item.indices(len(self))
-            return Pattern(resolution=self.resolution, format=self.format,
-                           tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)))  # noqa: E501
+            return Pattern(
+                resolution=self.resolution,
+                format=self.format,
+                tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)),
+            )  # noqa: E501
         else:
             return super(Pattern, self).__getitem__(item)
 
@@ -41,13 +47,12 @@ class Pattern(list):
 
 
 class Track(list):
-
     def __init__(self, events=[], tick_relative=True):
         self.tick_relative = tick_relative
         super(Track, self).__init__(events)
 
     def make_ticks_abs(self):
-        if (self.tick_relative):
+        if self.tick_relative:
             self.tick_relative = False
             running_tick = 0
             for event in self:
@@ -55,7 +60,7 @@ class Track(list):
                 running_tick = event.tick
 
     def make_ticks_rel(self):
-        if (not self.tick_relative):
+        if not self.tick_relative:
             self.tick_relative = True
             running_tick = 0
             for event in self:

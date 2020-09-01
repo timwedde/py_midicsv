@@ -23,26 +23,22 @@ def as_midi_bytes(text):
 
 def to_NoteOffEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
-    return NoteOffEvent(tick=time, channel=channel,
-                        pitch=pitch, velocity=velocity)
+    return NoteOffEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
 
 
 def to_NoteOnEvent(track, time, identifier, line):
     channel, pitch, velocity = map(int, line)
-    return NoteOnEvent(tick=time, channel=channel,
-                       pitch=pitch, velocity=velocity)
+    return NoteOnEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
 
 
 def to_AfterTouchEvent(track, time, identifier, line):
     channel, pitch, value = map(int, line)
-    return AfterTouchEvent(tick=time, channel=channel,
-                           pitch=pitch, value=value)
+    return AfterTouchEvent(tick=time, channel=channel, pitch=pitch, value=value)
 
 
 def to_ControlChangeEvent(track, time, identifier, line):
     channel, control, value = map(int, line)
-    return ControlChangeEvent(tick=time, channel=channel,
-                              control=control, value=value)
+    return ControlChangeEvent(tick=time, channel=channel, control=control, value=value)
 
 
 def to_ProgramChangeEvent(track, time, identifier, line):
@@ -140,9 +136,13 @@ def to_SmpteOffsetEvent(track, time, identifier, line):
 
 def to_TimeSignatureEvent(track, time, identifier, line):
     data = {i: val for i, val in enumerate(map(int, line))}
-    return TimeSignatureEvent(tick=time, numerator=data.get(0),
-                              denominator=data.get(1), metronome=data.get(2, 24),
-                              thirtyseconds=data.get(3, 8))
+    return TimeSignatureEvent(
+        tick=time,
+        numerator=data.get(0),
+        denominator=data.get(1),
+        metronome=data.get(2, 24),
+        thirtyseconds=data.get(3, 8),
+    )
 
 
 def to_KeySignatureEvent(track, time, identifier, line):

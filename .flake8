@@ -8,3 +8,5 @@ ignore =
     E731,
     # Too many leading '#'
     E266,
+    # Line too long
+    E501,

@@ -9,10 +9,14 @@ class EventRegistry(object):
 
     def register_event(cls, event, bases):
         if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
-            assert event.statusmsg not in cls.Events, "Event %s already registered" % event.name
+            assert event.statusmsg not in cls.Events, (
+                "Event %s already registered" % event.name
+            )
             cls.Events[event.statusmsg] = event
         elif (MetaEvent in bases) or (MetaEventWithText in bases):
-            assert event.metacommand not in cls.MetaEvents, "Event %s already registered" % event.name
+            assert event.metacommand not in cls.MetaEvents, (
+                "Event %s already registered" % event.name
+            )
             cls.MetaEvents[event.metacommand] = event
         else:
             raise ValueError("Unknown bases class in event type: " + event.name)
@@ -22,7 +26,13 @@ class EventRegistry(object):
 
 class AutoRegister(type):
     def __init__(cls, name, bases, dict):
-        if name not in {"AbstractEvent", "Event", "MetaEvent", "NoteEvent", "MetaEventWithText"}:
+        if name not in {
+            "AbstractEvent",
+            "Event",
+            "MetaEvent",
+            "NoteEvent",
+            "MetaEventWithText",
+        }:
             EventRegistry.register_event(cls, bases)
 
 
@@ -80,7 +90,11 @@ class Event(AbstractEvent):
         return self.__class__(**_kw)
 
     def __eq__(self, other):
-        return (self.channel, self.tick, self.data) == (other.channel, other.tick, other.data)  # noqa: E501
+        return (self.channel, self.tick, self.data) == (
+            other.channel,
+            other.tick,
+            other.data,
+        )
 
     def __lt__(self, other):
         if self.tick and other.tick:

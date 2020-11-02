@@ -36,7 +36,7 @@ class Pattern(list):
                 resolution=self.resolution,
                 format=self.format,
                 tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)),
-            )  # noqa: E501
+            )
         else:
             return super(Pattern, self).__getitem__(item)
 
@@ -70,7 +70,7 @@ class Track(list):
     def __getitem__(self, item):
         if isinstance(item, slice):
             indices = item.indices(len(self))
-            return Track((super(Track, self).__getitem__(i) for i in range(*indices)))  # noqa: E501
+            return Track((super(Track, self).__getitem__(i) for i in range(*indices)))
         else:
             return super(Track, self).__getitem__(item)
 

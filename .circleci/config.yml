@@ -14,6 +14,12 @@ commands:
             poetry run flake8 py_midicsv
 
 jobs:
+  test-39:
+    docker:
+      - image: circleci/python:3.9
+    steps:
+      - checkout
+      - build-and-test
   test-38:
     docker:
       - image: circleci/python:3.8
@@ -23,12 +29,6 @@ jobs:
   test-37:
     docker:
       - image: circleci/python:3.7
-    steps:
-      - checkout
-      - build-and-test
-  test-36:
-    docker:
-      - image: circleci/python:3.6
     steps:
       - checkout
       - build-and-test
@@ -48,12 +48,18 @@ workflows:
 
     test-workflow:
       jobs:
+        - test-39
         - test-38
         - test-37
-        - test-36
 
     deploy-workflow:
       jobs:
+        - test-39:
+            filters:
+              tags:
+                only: /v[0-9]+(\.[0-9]+)*/
+              branches:
+                ignore: /.*/
         - test-38:
             filters:
               tags:
@@ -66,17 +72,11 @@ workflows:
                 only: /v[0-9]+(\.[0-9]+)*/
               branches:
                 ignore: /.*/
-        - test-36:
-            filters:
-              tags:
-                only: /v[0-9]+(\.[0-9]+)*/
-              branches:
-                ignore: /.*/
         - deploy:
             requires:
+              - test-39
               - test-38
               - test-37
-              - test-36
             filters:
               tags:
                 only: /v[0-9]+(\.[0-9]+)*/

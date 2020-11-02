@@ -31,7 +31,7 @@ def from_NoteOnEvent(track, time, event):
 
 
 def from_AfterTouchEvent(track, time, event):
-    return write_event(track, time, "Poly_aftertouch_c", [event.channel, *event.data])  # noqa: E501
+    return write_event(track, time, "Poly_aftertouch_c", [event.channel, *event.data])
 
 
 def from_ControlChangeEvent(track, time, event):
@@ -43,19 +43,30 @@ def from_ProgramChangeEvent(track, time, event):
 
 
 def from_ChannelAfterTouchEvent(track, time, event):
-    return write_event(track, time, "Channel_aftertouch_c", [event.channel, event.data[0]])
+    return write_event(
+        track, time, "Channel_aftertouch_c", [event.channel, event.data[0]]
+    )
 
 
 def from_PitchWheelEvent(track, time, event):
-    return write_event(track, time, "Pitch_bend_c", [event.channel, (event.data[0] | (event.data[1] << 7))])
+    return write_event(
+        track,
+        time,
+        "Pitch_bend_c",
+        [event.channel, (event.data[0] | (event.data[1] << 7))],
+    )
 
 
 def from_SequenceNumberMetaEvent(track, time, event):
-    return write_event(track, time, "Sequence_number", [((event.data[0] << 8) | event.data[1])])
+    return write_event(
+        track, time, "Sequence_number", [((event.data[0] << 8) | event.data[1])]
+    )
 
 
 def from_ProgramNameEvent(track, time, event):
-    return write_event(track, time, "Program_name_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(
+        track, time, "Program_name_t", ['"{}"'.format(as_csv_str(event.text))]
+    )
 
 
 def from_TextMetaEvent(track, time, event):
@@ -63,7 +74,9 @@ def from_TextMetaEvent(track, time, event):
 
 
 def from_CopyrightMetaEvent(track, time, event):
-    return write_event(track, time, "Copyright_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(
+        track, time, "Copyright_t", ['"{}"'.format(as_csv_str(event.text))]
+    )
 
 
 def from_TrackNameEvent(track, time, event):
@@ -71,7 +84,9 @@ def from_TrackNameEvent(track, time, event):
 
 
 def from_InstrumentNameEvent(track, time, event):
-    return write_event(track, time, "Instrument_name_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(
+        track, time, "Instrument_name_t", ['"{}"'.format(as_csv_str(event.text))]
+    )
 
 
 def from_LyricsEvent(track, time, event):
@@ -83,7 +98,9 @@ def from_MarkerEvent(track, time, event):
 
 
 def from_CuePointEvent(track, time, event):
-    return write_event(track, time, "Cue_point_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(
+        track, time, "Cue_point_t", ['"{}"'.format(as_csv_str(event.text))]
+    )
 
 
 def from_ChannelPrefixEvent(track, time, event):
@@ -99,7 +116,9 @@ def from_EndOfTrackEvent(track, time, event):
 
 
 def from_DeviceNameEvent(track, time, event):
-    return write_event(track, time, "Device_name_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(
+        track, time, "Device_name_t", ['"{}"'.format(as_csv_str(event.text))]
+    )
 
 
 def from_TrackLoopEvent(track, time, event):
@@ -125,12 +144,17 @@ def from_KeySignatureEvent(track, time, event):
         track,
         time,
         "Key_signature",
-        [event.get_alternatives(), '"major"' if len(event.data) > 1 and event.data[1] == 0 else '"minor"'],
-    )  # noqa: E501
+        [
+            event.get_alternatives(),
+            '"major"' if len(event.data) > 1 and event.data[1] == 0 else '"minor"',
+        ],
+    )
 
 
 def from_SequencerSpecificEvent(track, time, event):
-    return write_event(track, time, "Sequencer_specific", [len(event.data), *event.data])
+    return write_event(
+        track, time, "Sequencer_specific", [len(event.data), *event.data]
+    )
 
 
 def from_SysexEvent(track, time, event):
@@ -138,4 +162,6 @@ def from_SysexEvent(track, time, event):
 
 
 def from_SysexF7Event(track, time, event):
-    return write_event(track, time, "System_exclusive_F7", [len(event.data), *event.data])
+    return write_event(
+        track, time, "System_exclusive_F7", [len(event.data), *event.data]
+    )

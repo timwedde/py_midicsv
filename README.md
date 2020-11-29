@@ -7,11 +7,6 @@ A Python library inspired by the [midicsv](http://www.fourmilab.ch/webtools/midi
 If you found this library, you probably already know why you need it.
 
 
-## Disclaimer
-
-This library is currently in Beta. This means that the interface might change and that the encoding scheme is not yet finalised. Expect slight inconsistencies.
-
-
 ## Installation
 
 `py_midicsv` can be installed via pip:

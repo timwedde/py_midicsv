@@ -24,6 +24,43 @@ $ poetry install
 
 ## Usage
 
+### As a Command Line Tool
+```bash
+Usage: midicsv [OPTIONS] INPUT_FILE OUTPUT_FILE
+
+  Convert MIDI files to CSV files.
+
+  midicsv reads a standard MIDI file and decodes it into a CSV file which
+  preserves all the information in the MIDI file. The ASCII CSV file may be
+  loaded into a spreadsheet or database application, or processed by a
+  program to transform the MIDI data (for example, to key transpose a
+  composition or extract a track from a multi-track sequence). A CSV file in
+  the format created by midicsv may be converted back into a standard MIDI
+  file with the csvmidi program.
+
+  Specify an input file and an output file to process it. Either argument
+  can be stdin/stdout.
+
+Options:
+  --help  Show this message and exit.
+```
+
+```bash
+Usage: csvmidi [OPTIONS] INPUT_FILE OUTPUT_FILE
+
+  Convert CSV files to MIDI files.
+
+  csvmidi reads a CSV file in the format written by midicsv and creates the
+  equivalent standard MIDI file.
+
+  Specify an input file and an output file to process it. Either argument
+  can be stdin/stdout.
+
+Options:
+  --help  Show this message and exit.
+```
+
+### As a Library
 ```python
 import py_midicsv as pm
 
@@ -38,6 +75,9 @@ with open("example_converted.mid", "wb") as output_file:
     midi_writer = pm.FileWriter(output_file)
     midi_writer.write(midi_object)
 ```
+
+## Documentation
+A full explanation of the `midicsv` file format can be found [here](doc/file-format.md).
 
 ## Differences
 

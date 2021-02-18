@@ -68,7 +68,7 @@ import py_midicsv as pm
 csv_string = pm.midi_to_csv("example.mid")
 
 with open("example_converted.csv", "w") as f:
-    f.write(csv_string)
+    f.writelines(csv_string)
 
 # Parse the CSV output of the previous command back into a MIDI file
 midi_object = pm.csv_to_midi(csv_string)

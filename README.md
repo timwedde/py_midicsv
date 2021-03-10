@@ -80,7 +80,7 @@ with open("example_converted.mid", "wb") as output_file:
 ```
 
 ## Documentation
-A full explanation of the `midicsv` file format can be found [here](doc/file-format.md).
+A full explanation of the `midicsv` file format can be found [here](https://github.com/timwedde/py_midicsv/blob/master/doc/file-format.md).
 
 ## Differences
 

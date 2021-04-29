@@ -9,8 +9,8 @@ repository = "https://github.com/timwedde/py_midicsv"
 homepage = "https://github.com/timwedde/py_midicsv"
 
 [tool.poetry.scripts]
-midicsv = "py_midicsv.cli:midicsv"
-csvmidi = "py_midicsv.cli:csvmidi"
+midicsvpy = "py_midicsv.cli:midicsv"
+csvmidipy = "py_midicsv.cli:csvmidi"
 
 [tool.poetry.dependencies]
 python = "^3.7"

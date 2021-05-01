@@ -26,7 +26,7 @@ $ poetry install
 
 ### As a Command Line Tool
 ```bash
-Usage: midicsv [OPTIONS] INPUT_FILE OUTPUT_FILE
+Usage: midicsvpy [OPTIONS] INPUT_FILE OUTPUT_FILE
 
   Convert MIDI files to CSV files.
 
@@ -42,11 +42,13 @@ Usage: midicsv [OPTIONS] INPUT_FILE OUTPUT_FILE
   can be stdin/stdout.
 
 Options:
-  --help  Show this message and exit.
+  -u, --usage
+  -v, --verbose
+  --help         Show this message and exit.
 ```
 
 ```bash
-Usage: csvmidi [OPTIONS] INPUT_FILE OUTPUT_FILE
+Usage: csvmidipy [OPTIONS] INPUT_FILE OUTPUT_FILE
 
   Convert CSV files to MIDI files.
 
@@ -57,7 +59,11 @@ Usage: csvmidi [OPTIONS] INPUT_FILE OUTPUT_FILE
   can be stdin/stdout.
 
 Options:
-  --help  Show this message and exit.
+  -u, --usage
+  -v, --verbose
+  -z, --strict-csv
+  -x, --no-compress
+  --help             Show this message and exit.
 ```
 
 ### As a Library

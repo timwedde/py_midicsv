@@ -14,7 +14,7 @@ csvmidipy = "py_midicsv.cli:csvmidi"
 
 [tool.poetry.dependencies]
 python = "^3.7"
-click = "^7.1.2"
+click = "^8.0.3"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"

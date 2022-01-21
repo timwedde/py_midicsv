@@ -7,6 +7,10 @@ from .constants import *
 from .util import *
 
 
+class ParseError(Exception):
+    pass
+
+
 class ValidationError(Exception):
     pass
 
@@ -109,8 +113,13 @@ class FileReader(object):
             cmd = trackdata.get_data_byte()
             if cmd not in EventRegistry.MetaEvents:
                 if strict:
-                    raise Warning(f"Unknown Meta MIDI Event: {cmd}")
-                print(f"Unknown Meta MIDI Event: {cmd}", file=sys.stderr)
+                    raise ParseError(
+                        f"Unknown Meta MIDI Event {cmd} at position {trackdata.pos()}"
+                    )
+                print(
+                    f"Unknown Meta MIDI Event {cmd} at position {trackdata.pos()}",
+                    file=sys.stderr,
+                )
                 return
             cls = EventRegistry.MetaEvents[cmd]
             datalen = read_varlen(trackdata)
@@ -127,8 +136,13 @@ class FileReader(object):
             data = [next(trackdata) for x in range(datalen)]
             if stsmsg not in EventRegistry.Events:
                 if strict:
-                    raise Warning(f"Unknown Sysex Event: {stsmsg:02x}")
-                print(f"Unknown Sysex Event: {stsmsg:02x}", file=sys.stderr)
+                    raise ParseError(
+                        f"Unknown Sysex Event {stsmsg:02x} at position {trackdata.pos()}"
+                    )
+                print(
+                    f"Unknown Sysex Event {stsmsg:02x} at position {trackdata.pos()}",
+                    file=sys.stderr,
+                )
                 return
             cls = EventRegistry.Events[stsmsg]
             event = cls(tick=tick, data=data)
@@ -172,7 +186,10 @@ class FileReader(object):
                     raise ValidationError(f"{e} at position {trackdata.pos()}")
                 return event
         if strict:
-            raise Warning(f"Unknown MIDI Event: {stsmsg}" + repr(stsmsg))
+            raise ParseError(
+                f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}"
+                + repr(stsmsg)
+            )
 
 
 class FileWriter(object):

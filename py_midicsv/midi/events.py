@@ -221,10 +221,10 @@ class ControlChangeEvent(Event):
     def validate(self):
         assert (
             0 <= self.data[0] <= 127
-        ), f"Controller number ({self.data[0]}) is out of range"
+        ), f"Controller number {self.data[0]} is out of range"
         assert (
             0 <= self.data[1] <= 127
-        ), f"Controller value ({self.data[1]}) is out of range"
+        ), f"Controller value {self.data[1]} is out of range"
 
     value = property(get_value, set_value)
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def as_csv_str(bytestr):
     csv_str = ""
     for byte in bytestr:

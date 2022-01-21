@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### System ###
 from pprint import pformat
 

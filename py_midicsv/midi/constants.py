@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 OCTAVE_MAX_VALUE = 12
 OCTAVE_VALUES = list(range(OCTAVE_MAX_VALUE))
 

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 ### Local ###
 from .events import midi_to_csv_map
 from .midi.fileio import read_midifile

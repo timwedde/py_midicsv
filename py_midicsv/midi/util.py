@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def read_varlen(data):
     NEXTBYTE = 1
     value = 0

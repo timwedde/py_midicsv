@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from .midi.events import *
 from .csv_converters import *
 from .midi_converters import *

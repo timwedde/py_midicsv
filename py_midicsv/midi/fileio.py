@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 
 from .containers import *
@@ -188,7 +189,6 @@ class FileReader(object):
         if strict:
             raise ParseError(
                 f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}"
-                + repr(stsmsg)
             )
 
 

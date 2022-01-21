@@ -16,6 +16,15 @@ class ValidationError(Exception):
     pass
 
 
+def warn_or_error(text, strict=True, is_parse=True):
+    if strict:
+        if is_parse:
+            raise ParseError(text)
+        else:
+            raise ValidationError(text)
+    print(f"Warning: {text}", file=sys.stderr)
+
+
 class Trackiter:
     def __init__(self, iterable, pos=0):
         self._buf = iterable
@@ -41,12 +50,12 @@ class Trackiter:
     def assert_status_byte(self, data):
         assert data & 0x80 != 0, self.errmsg("Unexpected data byte", data)
 
-    def get_data_byte(self):
+    def get_data_byte(self, strict=True):
         byte = self.__next__()
         try:
             self.assert_data_byte(byte)
         except Exception as e:
-            print(e)
+            print(f"Warning: {e}", file=sys.stderr)
         return byte
 
 
@@ -111,15 +120,11 @@ class FileReader(object):
         stsmsg = next(trackdata)
         # is the event a MetaEvent?
         if MetaEvent.is_event(stsmsg):
-            cmd = trackdata.get_data_byte()
+            cmd = trackdata.get_data_byte(strict)
             if cmd not in EventRegistry.MetaEvents:
-                if strict:
-                    raise ParseError(
-                        f"Unknown Meta MIDI Event {cmd} at position {trackdata.pos()}"
-                    )
-                print(
+                warn_or_error(
                     f"Unknown Meta MIDI Event {cmd} at position {trackdata.pos()}",
-                    file=sys.stderr,
+                    strict,
                 )
                 return
             cls = EventRegistry.MetaEvents[cmd]
@@ -129,20 +134,18 @@ class FileReader(object):
             try:
                 event.check()
             except Exception as e:
-                raise ValidationError(f"{e} at position {trackdata.pos()}")
+                warn_or_error(
+                    f"{e} at position {trackdata.pos()}", strict, is_parse=False
+                )
             return event
         # is this event a Sysex Event?
         elif SysexEvent.is_event(stsmsg):
             datalen = read_varlen(trackdata)
             data = [next(trackdata) for x in range(datalen)]
             if stsmsg not in EventRegistry.Events:
-                if strict:
-                    raise ParseError(
-                        f"Unknown Sysex Event {stsmsg:02x} at position {trackdata.pos()}"
-                    )
-                print(
+                warn_or_error(
                     f"Unknown Sysex Event {stsmsg:02x} at position {trackdata.pos()}",
-                    file=sys.stderr,
+                    strict,
                 )
                 return
             cls = EventRegistry.Events[stsmsg]
@@ -150,7 +153,9 @@ class FileReader(object):
             try:
                 event.check()
             except Exception as e:
-                raise ValidationError(f"{e} at position {trackdata.pos()}")
+                warn_or_error(
+                    f"{e} at position {trackdata.pos()}", strict, is_parse=False
+                )
             return event
         # not a Meta MIDI event or a Sysex event, must be a general message
         else:
@@ -164,13 +169,15 @@ class FileReader(object):
                 channel = self.RunningStatus & 0x0F
                 data = [stsmsg]
                 for _ in range(cls.length - 1):
-                    b = trackdata.get_data_byte()
+                    b = trackdata.get_data_byte(strict)
                     data.append(b)
                 event = cls(tick=tick, channel=channel, data=data)
                 try:
                     event.check()
                 except Exception as e:
-                    raise ValidationError(f"{e} at position {trackdata.pos()}")
+                    warn_or_error(
+                        f"{e} at position {trackdata.pos()}", strict, is_parse=False
+                    )
                 return event
             else:
                 self.RunningStatus = stsmsg
@@ -178,18 +185,19 @@ class FileReader(object):
                 channel = self.RunningStatus & 0x0F
                 data = []
                 for _ in range(cls.length):
-                    b = trackdata.get_data_byte()
+                    b = trackdata.get_data_byte(strict)
                     data.append(b)
                 event = cls(tick=tick, channel=channel, data=data)
                 try:
                     event.check()
                 except Exception as e:
-                    raise ValidationError(f"{e} at position {trackdata.pos()}")
+                    warn_or_error(
+                        f"{e} at position {trackdata.pos()}", strict, is_parse=False
+                    )
                 return event
-        if strict:
-            raise ParseError(
-                f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}"
-            )
+        warn_or_error(
+            f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}", strict
+        )
 
 
 class FileWriter(object):

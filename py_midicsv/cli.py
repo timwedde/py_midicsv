@@ -8,11 +8,12 @@ from .midicsv import parse as midi_to_csv
 
 
 @click.command()
+@click.option("-n", "--nostrict", is_flag=True)
 @click.option("-u", "--usage", is_flag=True)
 @click.option("-v", "--verbose", is_flag=True)
 @click.argument("input_file", type=click.File("rb"))
 @click.argument("output_file", type=click.File("w"))
-def midicsv(usage, verbose, input_file, output_file):
+def midicsv(usage, nostrict, verbose, input_file, output_file):
     """Convert MIDI files to CSV files.
 
     midicsv reads a standard MIDI file and decodes it into a CSV file
@@ -26,18 +27,19 @@ def midicsv(usage, verbose, input_file, output_file):
     Specify an input file and an output file to process it.
     Either argument can be stdin/stdout.
     """
-    csv_data = midi_to_csv(input_file)
+    csv_data = midi_to_csv(input_file, not nostrict)
     output_file.writelines(csv_data)
 
 
 @click.command()
+@click.option("-n", "--nostrict", is_flag=True)
 @click.option("-u", "--usage", is_flag=True)
 @click.option("-v", "--verbose", is_flag=True)
 @click.option("-z", "--strict-csv", is_flag=True)
 @click.option("-x", "--no-compress", is_flag=True)
 @click.argument("input_file", type=click.File("r"))
 @click.argument("output_file", type=click.File("wb"))
-def csvmidi(usage, verbose, strict_csv, no_compress, input_file, output_file):
+def csvmidi(usage, nostrict, verbose, strict_csv, no_compress, input_file, output_file):
     """Convert CSV files to MIDI files.
 
     csvmidi reads a CSV file in the format written by midicsv and creates
@@ -46,6 +48,6 @@ def csvmidi(usage, verbose, strict_csv, no_compress, input_file, output_file):
     Specify an input file and an output file to process it.
     Either argument can be stdin/stdout.
     """
-    midi_data = csv_to_midi(input_file)
+    midi_data = csv_to_midi(input_file, not nostrict)
     writer = FileWriter(output_file)
     writer.write(midi_data)

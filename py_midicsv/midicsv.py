@@ -3,7 +3,7 @@ from .events import midi_to_csv_map
 from .midi.fileio import read_midifile
 
 
-def parse(file):
+def parse(file, strict=True):
     """Parses a MIDI file into CSV format.
 
     Args:
@@ -19,7 +19,7 @@ def parse(file):
          "1, 0, Tempo, 500000"]
     """
     csv_file = []
-    pattern = read_midifile(file)
+    pattern = read_midifile(file, strict)
     csv_file.append(
         "0, 0, Header, {}, {}, {}\n".format(
             pattern.format, len(pattern), pattern.resolution

@@ -1,5 +1,6 @@
 ### System ###
 import struct
+from abc import abstractmethod
 from functools import total_ordering
 
 
@@ -69,6 +70,17 @@ class AbstractEvent(object, metaclass=AutoRegister):
             body.append(keyval)
         body = str.join(", ", body)
         return "midi.%s(%s)" % (self.__class__.__name__, body)
+
+    def check(self):
+        if isinstance(self.length, int):
+            assert (
+                len(self.data) == self.length
+            ), f"Event length mismatch for {type(self).__name__}"
+        self.validate()
+
+    @abstractmethod
+    def validate(self):
+        pass
 
     def __repr__(self):
         return self.__baserepr__()
@@ -205,6 +217,14 @@ class ControlChangeEvent(Event):
 
     def get_value(self):
         return self.data[1]
+
+    def validate(self):
+        assert (
+            0 <= self.data[0] <= 127
+        ), f"Controller number ({self.data[0]}) is out of range"
+        assert (
+            0 <= self.data[1] <= 127
+        ), f"Controller value ({self.data[1]}) is out of range"
 
     value = property(get_value, set_value)
 

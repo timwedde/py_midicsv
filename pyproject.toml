@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "py_midicsv"
-version = "2.0.1"
+version = "3.0.0"
 description = "A library for converting MIDI files from and to CSV format"
 authors = ["Tim Wedde <timwedde@icloud.com>"]
 license = "MIT"

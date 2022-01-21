@@ -9,7 +9,7 @@ from .events import csv_to_midi_map
 COMMENT_DELIMITERS = ("#", ";")
 
 
-def parse(file):
+def parse(file, strict=True):
     """Parses a CSV file into MIDI format.
 
     Args:

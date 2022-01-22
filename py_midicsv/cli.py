@@ -9,9 +9,11 @@ from .midicsv import parse as midi_to_csv
 
 
 @click.command()
-@click.option("-n", "--nostrict", is_flag=True)
-@click.option("-u", "--usage", is_flag=True)
-@click.option("-v", "--verbose", is_flag=True)
+@click.option(
+    "-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors."
+)
+@click.option("-u", "--usage", is_flag=True, help="Print usage information (NOOP)")
+@click.option("-v", "--verbose", is_flag=True, help="Print debug information (NOOP)")
 @click.argument("input_file", type=click.File("rb"))
 @click.argument("output_file", type=click.File("w"))
 def midicsv(usage, nostrict, verbose, input_file, output_file):
@@ -27,17 +29,26 @@ def midicsv(usage, nostrict, verbose, input_file, output_file):
 
     Specify an input file and an output file to process it.
     Either argument can be stdin/stdout.
+
+    Some arguments are kept for backwards-compatibility with the original midicsv tooling.
+    These are marked as NOOP in this command line interface.
     """
     csv_data = midi_to_csv(input_file, not nostrict)
     output_file.writelines(csv_data)
 
 
 @click.command()
-@click.option("-n", "--nostrict", is_flag=True)
-@click.option("-u", "--usage", is_flag=True)
-@click.option("-v", "--verbose", is_flag=True)
-@click.option("-z", "--strict-csv", is_flag=True)
-@click.option("-x", "--no-compress", is_flag=True)
+@click.option(
+    "-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors."
+)
+@click.option("-u", "--usage", is_flag=True, help="Print usage information (NOOP)")
+@click.option("-v", "--verbose", is_flag=True, help="Print debug information (NOOP)")
+@click.option(
+    "-z", "--strict-csv", is_flag=True, help="Raise exceptions on CSV errors (NOOP)"
+)
+@click.option(
+    "-x", "--no-compress", is_flag=True, help="Do not compress status bytes (NOOP)"
+)
 @click.argument("input_file", type=click.File("r"))
 @click.argument("output_file", type=click.File("wb"))
 def csvmidi(usage, nostrict, verbose, strict_csv, no_compress, input_file, output_file):
@@ -48,6 +59,9 @@ def csvmidi(usage, nostrict, verbose, strict_csv, no_compress, input_file, outpu
 
     Specify an input file and an output file to process it.
     Either argument can be stdin/stdout.
+
+    Some arguments are kept for backwards-compatibility with the original csvmidi tooling.
+    These are marked as NOOP in this command line interface.
     """
     midi_data = csv_to_midi(input_file, not nostrict)
     writer = FileWriter(output_file)

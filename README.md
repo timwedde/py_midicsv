@@ -32,19 +32,23 @@ Usage: midicsvpy [OPTIONS] INPUT_FILE OUTPUT_FILE
 
   midicsv reads a standard MIDI file and decodes it into a CSV file which
   preserves all the information in the MIDI file. The ASCII CSV file may be
-  loaded into a spreadsheet or database application, or processed by a
-  program to transform the MIDI data (for example, to key transpose a
-  composition or extract a track from a multi-track sequence). A CSV file in
-  the format created by midicsv may be converted back into a standard MIDI
-  file with the csvmidi program.
+  loaded into a spreadsheet or database application, or processed by a program
+  to transform the MIDI data (for example, to key transpose a composition or
+  extract a track from a multi-track sequence). A CSV file in the format
+  created by midicsv may be converted back into a standard MIDI file with the
+  csvmidi program.
 
-  Specify an input file and an output file to process it. Either argument
-  can be stdin/stdout.
+  Specify an input file and an output file to process it. Either argument can
+  be stdin/stdout.
+
+  Some arguments are kept for backwards-compatibility with the original
+  midicsv tooling. These are marked as NOOP in this command line interface.
 
 Options:
-  -u, --usage
-  -v, --verbose
-  --help         Show this message and exit.
+  -n, --nostrict  Do not fail on parse/validation errors.
+  -u, --usage     Print usage information (NOOP)
+  -v, --verbose   Print debug information (NOOP)
+  --help          Show this message and exit.
 ```
 
 ```bash
@@ -55,14 +59,18 @@ Usage: csvmidipy [OPTIONS] INPUT_FILE OUTPUT_FILE
   csvmidi reads a CSV file in the format written by midicsv and creates the
   equivalent standard MIDI file.
 
-  Specify an input file and an output file to process it. Either argument
-  can be stdin/stdout.
+  Specify an input file and an output file to process it. Either argument can
+  be stdin/stdout.
+
+  Some arguments are kept for backwards-compatibility with the original
+  csvmidi tooling. These are marked as NOOP in this command line interface.
 
 Options:
-  -u, --usage
-  -v, --verbose
-  -z, --strict-csv
-  -x, --no-compress
+  -n, --nostrict     Do not fail on parse/validation errors.
+  -u, --usage        Print usage information (NOOP)
+  -v, --verbose      Print debug information (NOOP)
+  -z, --strict-csv   Raise exceptions on CSV errors (NOOP)
+  -x, --no-compress  Do not compress status bytes (NOOP)
   --help             Show this message and exit.
 ```
 

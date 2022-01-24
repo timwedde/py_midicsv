@@ -5,10 +5,14 @@ from abc import abstractmethod
 from functools import total_ordering
 
 
+# Reference: http://midi.teragonaudio.com/tech/midispec.htm
+
+
 class EventRegistry(object):
     Events = {}
     MetaEvents = {}
 
+    @classmethod
     def register_event(cls, event, bases):
         if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
             assert event.statusmsg not in cls.Events, (
@@ -22,8 +26,6 @@ class EventRegistry(object):
             cls.MetaEvents[event.metacommand] = event
         else:
             raise ValueError("Unknown bases class in event type: " + event.name)
-
-    register_event = classmethod(register_event)
 
 
 class AutoRegister(type):
@@ -117,38 +119,35 @@ class Event(AbstractEvent):
     def __repr__(self):
         return self.__baserepr__(["channel"])
 
+    @classmethod
     def is_event(cls, statusmsg):
         return cls.statusmsg == (statusmsg & 0xF0)
 
-    is_event = classmethod(is_event)
-
-
-"""
-MetaEvent is a special subclass of Event that is not meant to
-be used as a concrete class.  It defines a subset of Events known
-as the Meta events.
-"""
-
 
 class MetaEvent(AbstractEvent):
+    """
+    MetaEvent is a special subclass of Event that is not meant to
+    be used as a concrete class.  It defines a subset of Events known
+    as the Meta events.
+    """
+
     statusmsg = 0xFF
     metacommand = 0x0
     name = "Meta Event"
 
+    @classmethod
     def is_event(cls, statusmsg):
         return statusmsg == 0xFF
 
-    is_event = classmethod(is_event)
-
-
-"""
-NoteEvent is a special subclass of Event that is not meant to
-be used as a concrete class.  It defines the generalities of NoteOn
-and NoteOff events.
-"""
-
 
 class NoteEvent(Event):
+
+    """
+    NoteEvent is a special subclass of Event that is not meant to
+    be used as a concrete class.  It defines the generalities of NoteOn
+    and NoteOff events.
+    """
+
     length = 2
 
     def get_pitch(self):
@@ -166,6 +165,12 @@ class NoteEvent(Event):
         self.data[1] = val
 
     velocity = property(get_velocity, set_velocity)
+
+    def validate(self):
+        assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
+        assert (
+            0 <= self.data[1] <= 127
+        ), f"Velocity value is out of range: {self.data[1]}"
 
 
 class NoteOnEvent(NoteEvent):
@@ -199,6 +204,12 @@ class AfterTouchEvent(Event):
 
     value = property(get_value, set_value)
 
+    def validate(self):
+        assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
+        assert (
+            0 <= self.data[1] <= 127
+        ), f"Pressure value is out of range: {self.data[1]}"
+
 
 class ControlChangeEvent(Event):
     statusmsg = 0xB0
@@ -222,10 +233,10 @@ class ControlChangeEvent(Event):
     def validate(self):
         assert (
             0 <= self.data[0] <= 127
-        ), f"Controller number {self.data[0]} is out of range"
+        ), f"Controller number is out of range: {self.data[0]}"
         assert (
             0 <= self.data[1] <= 127
-        ), f"Controller value {self.data[1]} is out of range"
+        ), f"Controller value is out of range: {self.data[1]}"
 
     value = property(get_value, set_value)
 
@@ -243,6 +254,11 @@ class ProgramChangeEvent(Event):
 
     value = property(get_value, set_value)
 
+    def validate(self):
+        assert (
+            0 <= self.data[0] <= 127
+        ), f"Program value is out of range: {self.data[0]}"
+
 
 class ChannelAfterTouchEvent(Event):
     statusmsg = 0xD0
@@ -256,6 +272,12 @@ class ChannelAfterTouchEvent(Event):
         return self.data[0]
 
     value = property(get_value, set_value)
+
+    def validate(self):
+        assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
+        assert (
+            0 <= self.data[1] <= 127
+        ), f"Pressure value is out of range: {self.data[1]}"
 
 
 class PitchWheelEvent(Event):
@@ -279,10 +301,9 @@ class SysexEvent(Event):
     name = "SysEx"
     length = "varlen"
 
+    @classmethod
     def is_event(cls, statusmsg):
         return cls.statusmsg == statusmsg or statusmsg == 0xF7
-
-    is_event = classmethod(is_event)
 
 
 class SequenceNumberMetaEvent(MetaEvent):

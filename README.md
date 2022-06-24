@@ -100,3 +100,8 @@ A full explanation of the `midicsv` file format can be found [here](https://gith
 
 This library adheres as much as possible to how the original library works, however generated files are not guaranteed to be entirely identical when compared bit-by-bit.
 This is mostly due to the handling of meta-event data, especially lyric events, since the encoding scheme has changed. The original library did not encode some of the characters in the Latin-1 set, while this version does.
+
+
+## Stargazers over time
+
+[![Stargazers over time](https://starchart.cc/timwedde/py_midicsv.svg)](https://starchart.cc/timwedde/py_midicsv)

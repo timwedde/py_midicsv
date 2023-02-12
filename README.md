@@ -1,6 +1,5 @@
 # py_midicsv
 
-[![CircleCI](https://circleci.com/gh/timwedde/py_midicsv.svg?style=svg)](https://circleci.com/gh/timwedde/py_midicsv)
 [![Downloads](https://pepy.tech/badge/py-midicsv)](https://pepy.tech/project/py-midicsv)
 
 A Python library inspired by the [midicsv](http://www.fourmilab.ch/webtools/midicsv/) tool created by John Walker. Its main purpose is to bidirectionally convert between the binary `MIDI` format and a human-readable interpretation of the contained data in text format, expressed as `CSV`.

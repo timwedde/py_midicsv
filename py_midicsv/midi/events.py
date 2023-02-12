@@ -40,15 +40,14 @@ class AbstractEvent(metaclass=AutoRegister):
     length = 0
     statusmsg = 0x0
 
-    def __init__(self, tick=0, data=None):
-        if data:
-            self.data = data
+    def __init__(self, tick=0, **kwargs):
+        if isinstance(self.length, int):
+            self.data = [0] * self.length
         else:
-            if isinstance(self.length, int):
-                self.data = [0] * self.length
-            else:
-                self.data = []
+            self.data = []
         self.tick = tick
+        for k, v in kwargs.items():
+            setattr(self, k, v)
 
     def __eq__(self, other):
         return (self.tick, self.data) == (other.tick, other.data)
@@ -73,9 +72,9 @@ class AbstractEvent(metaclass=AutoRegister):
 class Event(AbstractEvent):
     name = "Event"
 
-    def __init__(self, tick=0, channel=0, data=None):
+    def __init__(self, tick=0, channel=0, **kwargs):
         self.channel = channel
-        super().__init__(tick, data)
+        super().__init__(tick, **kwargs)
 
     def __eq__(self, other):
         return (self.tick, self.data, self.channel) == (

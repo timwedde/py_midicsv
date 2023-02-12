@@ -13,15 +13,52 @@ midicsvpy = "py_midicsv.cli:midicsv"
 csvmidipy = "py_midicsv.cli:csvmidi"
 
 [tool.poetry.dependencies]
-python = "^3.7"
-click = "^8.1.3"
+python = "^3.8"
+rich-click = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
-black = "^22.6.0"
-flake8 = "^5.0.3"
-pytest = "^7.1.2"
-pre-commit = "^2.20.0"
+pdoc3 = "^0.10.0"
+pytest = "^7.2.1"
+pytest-cov = "^4.0.0"
+pre-commit = "^3.0.4"
+pytest-mock = "^3.10.0"
 
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+fix = true
+force-exclude = true # necessary for excludes to work in pre-commit
+exclude = [
+    # "path/",
+]
+ignore = [
+    "E402",
+    "E722",
+    "TID252",
+    "C901",
+    "F405",
+    "F403",
+]
+line-length = 120
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "UP",
+    "S105",
+    "S106",
+    "S107",
+    "C",
+    "B",
+    "Q",
+    "RUF",
+]

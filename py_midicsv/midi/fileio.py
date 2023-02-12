@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 import sys
+from struct import pack, unpack
 
+from .constants import *
 from .containers import *
 from .events import *
-from struct import unpack, pack
-from .constants import *
 from .util import *
 
 
@@ -42,7 +41,7 @@ class Trackiter:
         return self._pos
 
     def errmsg(self, msg, data):
-        return "{} 0x{:02X} at position {}".format(msg, data, self.pos())
+        return f"{msg} 0x{data:02X} at position {self.pos()}"
 
     def assert_data_byte(self, data):
         assert data & 0x80 == 0, self.errmsg("Unexpected status byte", data)
@@ -59,7 +58,7 @@ class Trackiter:
         return byte
 
 
-class FileReader(object):
+class FileReader:
     def read(self, midifile, strict=True):
         pattern = self.parse_file_header(midifile, strict)
         Pattern.useRunningStatus = False
@@ -134,9 +133,7 @@ class FileReader(object):
             try:
                 event.check()
             except Exception as e:
-                warn_or_error(
-                    f"{e} at position {trackdata.pos()}", strict, is_parse=False
-                )
+                warn_or_error(f"{e} at position {trackdata.pos()}", strict, is_parse=False)
             return event
         # is this event a Sysex Event?
         elif SysexEvent.is_event(stsmsg):
@@ -153,9 +150,7 @@ class FileReader(object):
             try:
                 event.check()
             except Exception as e:
-                warn_or_error(
-                    f"{e} at position {trackdata.pos()}", strict, is_parse=False
-                )
+                warn_or_error(f"{e} at position {trackdata.pos()}", strict, is_parse=False)
             return event
         # not a Meta MIDI event or a Sysex event, must be a general message
         else:
@@ -175,9 +170,7 @@ class FileReader(object):
                 try:
                     event.check()
                 except Exception as e:
-                    warn_or_error(
-                        f"{e} at position {trackdata.pos()}", strict, is_parse=False
-                    )
+                    warn_or_error(f"{e} at position {trackdata.pos()}", strict, is_parse=False)
                 return event
             else:
                 self.RunningStatus = stsmsg
@@ -191,16 +184,12 @@ class FileReader(object):
                 try:
                     event.check()
                 except Exception as e:
-                    warn_or_error(
-                        f"{e} at position {trackdata.pos()}", strict, is_parse=False
-                    )
+                    warn_or_error(f"{e} at position {trackdata.pos()}", strict, is_parse=False)
                 return event
-        warn_or_error(
-            f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}", strict
-        )
+        warn_or_error(f"Unknown MIDI Event {stsmsg} at position {trackdata.pos()}", strict)
 
 
-class FileWriter(object):
+class FileWriter:
     RunningStatus = None
 
     def __init__(self, file):

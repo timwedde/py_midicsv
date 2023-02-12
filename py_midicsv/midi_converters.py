@@ -1,9 +1,8 @@
-# -*- coding: utf-8 -*-
 def as_csv_str(bytestr):
     csv_str = ""
     for byte in bytestr:
         if byte < 32 or byte > 126:
-            csv_str += "\\{:03o}".format(byte)
+            csv_str += f"\\{byte:03o}"
         elif byte == ord('"'):
             csv_str += '""'
         elif byte == ord("\\"):
@@ -14,7 +13,7 @@ def as_csv_str(bytestr):
 
 
 def write_event(track, time, identifier, data):
-    Items = ["{}, {}, {}".format(track, time, identifier)]
+    Items = [f"{track}, {time}, {identifier}"]
     if identifier.startswith("System") or identifier == "Sequencer_specific":
         fmt = "{:02X}"
     else:
@@ -44,9 +43,7 @@ def from_ProgramChangeEvent(track, time, event):
 
 
 def from_ChannelAfterTouchEvent(track, time, event):
-    return write_event(
-        track, time, "Channel_aftertouch_c", [event.channel, event.data[0]]
-    )
+    return write_event(track, time, "Channel_aftertouch_c", [event.channel, event.data[0]])
 
 
 def from_PitchWheelEvent(track, time, event):
@@ -59,49 +56,39 @@ def from_PitchWheelEvent(track, time, event):
 
 
 def from_SequenceNumberMetaEvent(track, time, event):
-    return write_event(
-        track, time, "Sequence_number", [((event.data[0] << 8) | event.data[1])]
-    )
+    return write_event(track, time, "Sequence_number", [((event.data[0] << 8) | event.data[1])])
 
 
 def from_ProgramNameEvent(track, time, event):
-    return write_event(
-        track, time, "Program_name_t", ['"{}"'.format(as_csv_str(event.text))]
-    )
+    return write_event(track, time, "Program_name_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_TextMetaEvent(track, time, event):
-    return write_event(track, time, "Text_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(track, time, "Text_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_CopyrightMetaEvent(track, time, event):
-    return write_event(
-        track, time, "Copyright_t", ['"{}"'.format(as_csv_str(event.text))]
-    )
+    return write_event(track, time, "Copyright_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_TrackNameEvent(track, time, event):
-    return write_event(track, time, "Title_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(track, time, "Title_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_InstrumentNameEvent(track, time, event):
-    return write_event(
-        track, time, "Instrument_name_t", ['"{}"'.format(as_csv_str(event.text))]
-    )
+    return write_event(track, time, "Instrument_name_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_LyricsEvent(track, time, event):
-    return write_event(track, time, "Lyric_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(track, time, "Lyric_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_MarkerEvent(track, time, event):
-    return write_event(track, time, "Marker_t", ['"{}"'.format(as_csv_str(event.text))])
+    return write_event(track, time, "Marker_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_CuePointEvent(track, time, event):
-    return write_event(
-        track, time, "Cue_point_t", ['"{}"'.format(as_csv_str(event.text))]
-    )
+    return write_event(track, time, "Cue_point_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_ChannelPrefixEvent(track, time, event):
@@ -117,9 +104,7 @@ def from_EndOfTrackEvent(track, time, event):
 
 
 def from_DeviceNameEvent(track, time, event):
-    return write_event(
-        track, time, "Device_name_t", ['"{}"'.format(as_csv_str(event.text))]
-    )
+    return write_event(track, time, "Device_name_t", [f'"{as_csv_str(event.text)}"'])
 
 
 def from_TrackLoopEvent(track, time, event):
@@ -153,9 +138,7 @@ def from_KeySignatureEvent(track, time, event):
 
 
 def from_SequencerSpecificEvent(track, time, event):
-    return write_event(
-        track, time, "Sequencer_specific", [len(event.data), *event.data]
-    )
+    return write_event(track, time, "Sequencer_specific", [len(event.data), *event.data])
 
 
 def from_SysexEvent(track, time, event):
@@ -163,6 +146,4 @@ def from_SysexEvent(track, time, event):
 
 
 def from_SysexF7Event(track, time, event):
-    return write_event(
-        track, time, "System_exclusive_F7", [len(event.data), *event.data]
-    )
+    return write_event(track, time, "System_exclusive_F7", [len(event.data), *event.data])

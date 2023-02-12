@@ -1,11 +1,11 @@
-# -*- coding: utf-8 -*-
 ### System ###
 import csv
 
+from .events import csv_to_midi_map
+from .midi.containers import *
+
 ### Local ###
 from .midi.events import *
-from .midi.containers import *
-from .events import csv_to_midi_map
 
 COMMENT_DELIMITERS = ("#", ";")
 
@@ -23,7 +23,7 @@ def parse(file, strict=True):
     """
 
     if isinstance(file, str):
-        with open(file, "r") as f:
+        with open(file) as f:
             return parse(f)
 
     pattern = Pattern(tick_relative=False)

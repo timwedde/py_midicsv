@@ -1,28 +1,22 @@
-# -*- coding: utf-8 -*-
 ### System ###
 import struct
 from abc import abstractmethod
 from functools import total_ordering
 
-
 # Reference: http://midi.teragonaudio.com/tech/midispec.htm
 
 
-class EventRegistry(object):
+class EventRegistry:
     Events = {}
     MetaEvents = {}
 
     @classmethod
     def register_event(cls, event, bases):
         if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
-            assert event.statusmsg not in cls.Events, (
-                "Event %s already registered" % event.name
-            )
+            assert event.statusmsg not in cls.Events, "Event %s already registered" % event.name
             cls.Events[event.statusmsg] = event
         elif (MetaEvent in bases) or (MetaEventWithText in bases):
-            assert event.metacommand not in cls.MetaEvents, (
-                "Event %s already registered" % event.name
-            )
+            assert event.metacommand not in cls.MetaEvents, "Event %s already registered" % event.name
             cls.MetaEvents[event.metacommand] = event
         else:
             raise ValueError("Unknown bases class in event type: " + event.name)
@@ -41,83 +35,60 @@ class AutoRegister(type):
 
 
 @total_ordering
-class AbstractEvent(object, metaclass=AutoRegister):
+class AbstractEvent(metaclass=AutoRegister):
     name = "Generic MIDI Event"
     length = 0
     statusmsg = 0x0
 
-    def __init__(self, **kw):
-        if isinstance(self.length, int):
-            defdata = [0] * self.length
+    def __init__(self, tick=0, data=None):
+        if data:
+            self.data = data
         else:
-            defdata = []
-        self.tick = 0
-        self.data = defdata
-        for key in kw:
-            setattr(self, key, kw[key])
+            if isinstance(self.length, int):
+                self.data = [0] * self.length
+            else:
+                self.data = []
+        self.tick = tick
 
     def __eq__(self, other):
         return (self.tick, self.data) == (other.tick, other.data)
 
     def __lt__(self, other):
-        if self.tick and other.tick:
-            return self.tick < other.tick
-        return self.data < other.data
+        return self.tick < other.tick
 
-    def __baserepr__(self, keys=[]):
-        keys = ["tick"] + keys + ["data"]
-        body = []
-        for key in keys:
-            val = getattr(self, key)
-            keyval = "%s=%r" % (key, val)
-            body.append(keyval)
-        body = str.join(", ", body)
-        return "midi.%s(%s)" % (self.__class__.__name__, body)
+    def __repr__(self):
+        return f"{self.__class__.__name__}(tick={self.tick}, data={self.data})"
 
     def check(self):
         if isinstance(self.length, int):
-            assert (
-                len(self.data) == self.length
-            ), f"Event length mismatch for {type(self).__name__}"
+            assert len(self.data) == self.length, f"Event length mismatch for {self.__class__.__name__}"
         self.validate()
 
     @abstractmethod
     def validate(self):
         pass
 
-    def __repr__(self):
-        return self.__baserepr__()
-
 
 @total_ordering
 class Event(AbstractEvent):
     name = "Event"
 
-    def __init__(self, **kw):
-        if "channel" not in kw:
-            kw = kw.copy()
-            kw["channel"] = 0
-        super(Event, self).__init__(**kw)
-
-    def copy(self, **kw):
-        _kw = {"channel": self.channel, "tick": self.tick, "data": self.data}
-        _kw.update(kw)
-        return self.__class__(**_kw)
+    def __init__(self, tick=0, channel=0, data=None):
+        self.channel = channel
+        super().__init__(tick, data)
 
     def __eq__(self, other):
-        return (self.channel, self.tick, self.data) == (
-            other.channel,
+        return (self.tick, self.data, self.channel) == (
             other.tick,
             other.data,
+            other.channel,
         )
 
     def __lt__(self, other):
-        if self.tick and other.tick:
-            return self.tick < other.tick
-        return self.data < other.data
+        return self.tick < other.tick
 
     def __repr__(self):
-        return self.__baserepr__(["channel"])
+        return f"{self.__class__.__name__}(tick={self.tick}, data={self.data}, channel={self.channel})"
 
     @classmethod
     def is_event(cls, statusmsg):
@@ -137,11 +108,10 @@ class MetaEvent(AbstractEvent):
 
     @classmethod
     def is_event(cls, statusmsg):
-        return statusmsg == 0xFF
+        return cls.statusmsg == statusmsg
 
 
 class NoteEvent(Event):
-
     """
     NoteEvent is a special subclass of Event that is not meant to
     be used as a concrete class.  It defines the generalities of NoteOn
@@ -168,9 +138,7 @@ class NoteEvent(Event):
 
     def validate(self):
         assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
-        assert (
-            0 <= self.data[1] <= 127
-        ), f"Velocity value is out of range: {self.data[1]}"
+        assert 0 <= self.data[1] <= 127, f"Velocity value is out of range: {self.data[1]}"
 
 
 class NoteOnEvent(NoteEvent):
@@ -206,9 +174,7 @@ class AfterTouchEvent(Event):
 
     def validate(self):
         assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
-        assert (
-            0 <= self.data[1] <= 127
-        ), f"Pressure value is out of range: {self.data[1]}"
+        assert 0 <= self.data[1] <= 127, f"Pressure value is out of range: {self.data[1]}"
 
 
 class ControlChangeEvent(Event):
@@ -231,12 +197,8 @@ class ControlChangeEvent(Event):
         return self.data[1]
 
     def validate(self):
-        assert (
-            0 <= self.data[0] <= 127
-        ), f"Controller number is out of range: {self.data[0]}"
-        assert (
-            0 <= self.data[1] <= 127
-        ), f"Controller value is out of range: {self.data[1]}"
+        assert 0 <= self.data[0] <= 127, f"Controller number is out of range: {self.data[0]}"
+        assert 0 <= self.data[1] <= 127, f"Controller value is out of range: {self.data[1]}"
 
     value = property(get_value, set_value)
 
@@ -255,9 +217,7 @@ class ProgramChangeEvent(Event):
     value = property(get_value, set_value)
 
     def validate(self):
-        assert (
-            0 <= self.data[0] <= 127
-        ), f"Program value is out of range: {self.data[0]}"
+        assert 0 <= self.data[0] <= 127, f"Program value is out of range: {self.data[0]}"
 
 
 class ChannelAfterTouchEvent(Event):
@@ -274,10 +234,7 @@ class ChannelAfterTouchEvent(Event):
     value = property(get_value, set_value)
 
     def validate(self):
-        assert 0 <= self.data[0] <= 127, f"Note value is out of range: {self.data[0]}"
-        assert (
-            0 <= self.data[1] <= 127
-        ), f"Pressure value is out of range: {self.data[1]}"
+        assert 0 <= self.data[0] <= 127, f"Pressure value is out of range: {self.data[1]}"
 
 
 class PitchWheelEvent(Event):
@@ -314,7 +271,7 @@ class SequenceNumberMetaEvent(MetaEvent):
 
 class MetaEventWithText(MetaEvent):
     def __init__(self, **kw):
-        super(MetaEventWithText, self).__init__(**kw)
+        super().__init__(**kw)
         if "text" not in kw:
             self.text = b"".join(struct.pack("B", datum) for datum in self.data)
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 OCTAVE_MAX_VALUE = 12
 OCTAVE_VALUES = list(range(OCTAVE_MAX_VALUE))
 
@@ -19,12 +18,12 @@ for value in range(128):
     if len(name) == 2:
         # sharp note
         flat = NOTE_NAMES[noteidx + 1] + "b"
-        NOTE_NAME_MAP_FLAT["{}_{}".format(flat, octidx)] = value
-        NOTE_NAME_MAP_SHARP["{}_{}".format(name, octidx)] = value
-        NOTE_VALUE_MAP_FLAT.append("{}_{}".format(flat, octidx))
-        NOTE_VALUE_MAP_SHARP.append("{}_{}".format(name, octidx))
+        NOTE_NAME_MAP_FLAT[f"{flat}_{octidx}"] = value
+        NOTE_NAME_MAP_SHARP[f"{name}_{octidx}"] = value
+        NOTE_VALUE_MAP_FLAT.append(f"{flat}_{octidx}")
+        NOTE_VALUE_MAP_SHARP.append(f"{name}_{octidx}")
         globals()["{}_{}".format(name[0] + "#", octidx)] = value
-        globals()["{}_{}".format(flat, octidx)] = value
+        globals()[f"{flat}_{octidx}"] = value
     else:
         NOTE_NAME_MAP_FLAT["%s_%d" % (name, octidx)] = value
         NOTE_NAME_MAP_SHARP["%s_%d" % (name, octidx)] = value

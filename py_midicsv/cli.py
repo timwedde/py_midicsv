@@ -1,17 +1,15 @@
-# -*- coding: utf-8 -*-
 ### CLI ###
 import click
 
+from .csvmidi import parse as csv_to_midi
+
 ### Local ###
 from .midi.fileio import FileWriter
-from .csvmidi import parse as csv_to_midi
 from .midicsv import parse as midi_to_csv
 
 
 @click.command()
-@click.option(
-    "-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors."
-)
+@click.option("-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors.")
 @click.option("-u", "--usage", is_flag=True, help="Print usage information (NOOP)")
 @click.option("-v", "--verbose", is_flag=True, help="Print debug information (NOOP)")
 @click.argument("input_file", type=click.File("rb"))
@@ -38,17 +36,11 @@ def midicsv(usage, nostrict, verbose, input_file, output_file):
 
 
 @click.command()
-@click.option(
-    "-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors."
-)
+@click.option("-n", "--nostrict", is_flag=True, help="Do not fail on parse/validation errors.")
 @click.option("-u", "--usage", is_flag=True, help="Print usage information (NOOP)")
 @click.option("-v", "--verbose", is_flag=True, help="Print debug information (NOOP)")
-@click.option(
-    "-z", "--strict-csv", is_flag=True, help="Raise exceptions on CSV errors (NOOP)"
-)
-@click.option(
-    "-x", "--no-compress", is_flag=True, help="Do not compress status bytes (NOOP)"
-)
+@click.option("-z", "--strict-csv", is_flag=True, help="Raise exceptions on CSV errors (NOOP)")
+@click.option("-x", "--no-compress", is_flag=True, help="Do not compress status bytes (NOOP)")
 @click.argument("input_file", type=click.File("r"))
 @click.argument("output_file", type=click.File("wb"))
 def csvmidi(usage, nostrict, verbose, strict_csv, no_compress, input_file, output_file):

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ### Local ###
 from .events import midi_to_csv_map
 from .midi.fileio import read_midifile
@@ -21,13 +20,9 @@ def parse(file, strict=True):
     """
     csv_file = []
     pattern = read_midifile(file, strict)
-    csv_file.append(
-        "0, 0, Header, {}, {}, {}\n".format(
-            pattern.format, len(pattern), pattern.resolution
-        )
-    )
+    csv_file.append(f"0, 0, Header, {pattern.format}, {len(pattern)}, {pattern.resolution}\n")
     for index, track in enumerate(pattern):
-        csv_file.append("{}, {}, Start_track\n".format(index + 1, 0))
+        csv_file.append(f"{index + 1}, {0}, Start_track\n")
         abstime = 0
         for event in track:
             abstime += event.tick

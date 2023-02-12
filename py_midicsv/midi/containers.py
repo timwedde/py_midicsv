@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 ### System ###
 from pprint import pformat
 
@@ -7,14 +6,14 @@ class Pattern(list):
 
     useRunningStatus = True
 
-    def __init__(self, tracks=[], resolution=220, format=1, tick_relative=True):
+    def __init__(self, tracks=None, resolution=220, format=1, tick_relative=True):
         self.format = format
         self.resolution = resolution
         self.tick_relative = tick_relative
-        super(Pattern, self).__init__(tracks)
+        super().__init__(tracks or [])
 
     def __repr__(self):
-        return "midi.Pattern(format=%r, resolution=%r, tracks=\\\n%s)" % (
+        return "midi.Pattern(format={!r}, resolution={!r}, tracks=\\\n{})".format(
             self.format,
             self.resolution,
             pformat(list(self)),
@@ -39,7 +38,7 @@ class Pattern(list):
                 tracks=(super(Pattern, self).__getitem__(i) for i in range(*indices)),
             )
         else:
-            return super(Pattern, self).__getitem__(item)
+            return super().__getitem__(item)
 
     def __getslice__(self, i, j):
         # The deprecated __getslice__ is still called when subclassing
@@ -48,9 +47,9 @@ class Pattern(list):
 
 
 class Track(list):
-    def __init__(self, events=[], tick_relative=True):
+    def __init__(self, events=None, tick_relative=True):
         self.tick_relative = tick_relative
-        super(Track, self).__init__(events)
+        super().__init__(events or [])
 
     def make_ticks_abs(self):
         if self.tick_relative:
@@ -71,9 +70,9 @@ class Track(list):
     def __getitem__(self, item):
         if isinstance(item, slice):
             indices = item.indices(len(self))
-            return Track((super(Track, self).__getitem__(i) for i in range(*indices)))
+            return Track(super(Track, self).__getitem__(i) for i in range(*indices))
         else:
-            return super(Track, self).__getitem__(item)
+            return super().__getitem__(item)
 
     def __getslice__(self, i, j):
         # The deprecated __getslice__ is still called when subclassing

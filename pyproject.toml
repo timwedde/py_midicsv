@@ -20,7 +20,7 @@ rich-click = "^1.6.1"
 pdoc3 = "^0.10.0"
 pytest = "^7.2.1"
 pytest-cov = "^4.0.0"
-pre-commit = "^3.0.4"
+pre-commit = "^3.5.0"
 pytest-mock = "^3.10.0"
 
 [build-system]
@@ -39,6 +39,9 @@ force-exclude = true # necessary for excludes to work in pre-commit
 exclude = [
     # "path/",
 ]
+line-length = 120
+
+[tool.ruff.lint]
 ignore = [
     "E402",
     "E722",
@@ -47,7 +50,6 @@ ignore = [
     "F405",
     "F403",
 ]
-line-length = 120
 select = [
     "E",
     "F",

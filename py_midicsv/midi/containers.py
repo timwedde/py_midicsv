@@ -3,7 +3,6 @@ from pprint import pformat
 
 
 class Pattern(list):
-
     useRunningStatus = True
 
     def __init__(self, tracks=None, resolution=220, format=1, tick_relative=True):
@@ -13,11 +12,7 @@ class Pattern(list):
         super().__init__(tracks or [])
 
     def __repr__(self):
-        return "midi.Pattern(format={!r}, resolution={!r}, tracks=\\\n{})".format(
-            self.format,
-            self.resolution,
-            pformat(list(self)),
-        )
+        return f"midi.Pattern(format={self.format!r}, resolution={self.resolution!r}, tracks=\\\n{pformat(list(self))})"
 
     def make_ticks_abs(self):
         self.tick_relative = False

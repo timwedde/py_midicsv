@@ -2,24 +2,25 @@
 import struct
 from abc import abstractmethod
 from functools import total_ordering
+from typing import ClassVar
 
 # Reference: http://midi.teragonaudio.com/tech/midispec.htm
 
 
 class EventRegistry:
-    Events = {}
-    MetaEvents = {}
+    Events: ClassVar = {}
+    MetaEvents: ClassVar = {}
 
     @classmethod
     def register_event(cls, event, bases):
         if (Event in bases) or (NoteEvent in bases) or (SysexEvent in bases):
-            assert event.statusmsg not in cls.Events, "Event %s already registered" % event.name
+            assert event.statusmsg not in cls.Events, f"Event {event.name} already registered"
             cls.Events[event.statusmsg] = event
         elif (MetaEvent in bases) or (MetaEventWithText in bases):
-            assert event.metacommand not in cls.MetaEvents, "Event %s already registered" % event.name
+            assert event.metacommand not in cls.MetaEvents, f"Event {event.name} already registered"
             cls.MetaEvents[event.metacommand] = event
         else:
-            raise ValueError("Unknown bases class in event type: " + event.name)
+            raise ValueError(f"Unknown bases class in event type: {event.name}")
 
 
 class AutoRegister(type):
@@ -359,10 +360,10 @@ class SetTempoEvent(MetaEvent):
     length = 3
 
     def set_bpm(self, bpm):
-        self.mpqn = int(float(6e7) / bpm)
+        self.mpqn = int(6e7 / bpm)
 
     def get_bpm(self):
-        return float(6e7) / self.mpqn
+        return 6e7 / self.mpqn
 
     bpm = property(get_bpm, set_bpm)
 

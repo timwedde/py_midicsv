@@ -18,7 +18,7 @@ def write_event(track, time, identifier, data):
         fmt = "{:02X}"
     else:
         fmt = "{}"
-    Items.extend(fmt.format(x) if type(x) == int else x for x in data)
+    Items.extend(fmt.format(x) if isinstance(x, int) else x for x in data)
     return ", ".join(Items) + "\n"
 
 

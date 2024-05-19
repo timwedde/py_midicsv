@@ -135,7 +135,7 @@ def to_SmpteOffsetEvent(track, time, identifier, line):
 
 
 def to_TimeSignatureEvent(track, time, identifier, line):
-    data = {i: val for i, val in enumerate(map(int, line))}
+    data = dict(enumerate(map(int, line)))
     return TimeSignatureEvent(
         tick=time,
         numerator=data.get(0),

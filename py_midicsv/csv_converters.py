@@ -22,37 +22,37 @@ def as_midi_bytes(text):
 
 
 def to_NoteOffEvent(track, time, identifier, line):
-    channel, pitch, velocity = map(int, line)
+    channel, pitch, velocity = map(int, line[:3])
     return NoteOffEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
 
 
 def to_NoteOnEvent(track, time, identifier, line):
-    channel, pitch, velocity = map(int, line)
+    channel, pitch, velocity = map(int, line[:3])
     return NoteOnEvent(tick=time, channel=channel, pitch=pitch, velocity=velocity)
 
 
 def to_AfterTouchEvent(track, time, identifier, line):
-    channel, pitch, value = map(int, line)
+    channel, pitch, value = map(int, line[:3])
     return AfterTouchEvent(tick=time, channel=channel, pitch=pitch, value=value)
 
 
 def to_ControlChangeEvent(track, time, identifier, line):
-    channel, control, value = map(int, line)
+    channel, control, value = map(int, line[:3])
     return ControlChangeEvent(tick=time, channel=channel, control=control, value=value)
 
 
 def to_ProgramChangeEvent(track, time, identifier, line):
-    channel, value = map(int, line)
+    channel, value = map(int, line[:2])
     return ProgramChangeEvent(tick=time, channel=channel, value=value)
 
 
 def to_ChannelAfterTouchEvent(track, time, identifier, line):
-    channel, value = map(int, line)
+    channel, value = map(int, line[:2])
     return ChannelAfterTouchEvent(tick=time, channel=channel, value=value)
 
 
 def to_PitchWheelEvent(track, time, identifier, line):
-    channel, value = map(int, line)
+    channel, value = map(int, line[:2])
     return PitchWheelEvent(tick=time, channel=channel, pitch=value - 0x2000)
 
 
@@ -130,12 +130,12 @@ def to_SetTempoEvent(track, time, identifier, line):
 
 
 def to_SmpteOffsetEvent(track, time, identifier, line):
-    hr, mn, se, fr, ff = map(int, line)
+    hr, mn, se, fr, ff = map(int, line[:5])
     return SmpteOffsetEvent(tick=time, hr=hr, mn=mn, se=se, fr=fr, ff=ff)
 
 
 def to_TimeSignatureEvent(track, time, identifier, line):
-    data = dict(enumerate(map(int, line)))
+    data = dict(enumerate(map(int, line[:4])))
     return TimeSignatureEvent(
         tick=time,
         numerator=data.get(0),

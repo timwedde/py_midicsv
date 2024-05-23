@@ -342,6 +342,7 @@ class ChannelPrefixEvent(MetaEvent):
 class PortEvent(MetaEvent):
     name = "MIDI Port/Cable"
     metacommand = 0x21
+    length = 1
 
 
 class TrackLoopEvent(MetaEvent):

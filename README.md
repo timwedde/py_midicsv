@@ -5,7 +5,6 @@
 A Python library inspired by the [midicsv](http://www.fourmilab.ch/webtools/midicsv/) tool created by John Walker. Its main purpose is to bidirectionally convert between the binary `MIDI` format and a human-readable interpretation of the contained data in text format, expressed as `CSV`.
 If you found this library, you probably already know why you need it.
 
-
 ## Installation
 
 `py_midicsv` can be installed via pip:
@@ -19,7 +18,6 @@ $ git clone https://github.com/timwedde/py_midicsv.git
 $ cd py_midicsv/
 $ poetry install
 ```
-
 
 ## Usage
 
@@ -78,13 +76,13 @@ Options:
 import py_midicsv as pm
 
 # Load the MIDI file and parse it into CSV format
-csv_string = pm.midi_to_csv("example.mid")
+csv_string_list = pm.midi_to_csv("example.mid")
 
 with open("example_converted.csv", "w") as f:
-    f.writelines(csv_string)
+    f.writelines(csv_string_list)
 
 # Parse the CSV output of the previous command back into a MIDI file
-midi_object = pm.csv_to_midi(csv_string)
+midi_object = pm.csv_to_midi(csv_string_list)
 
 # Save the parsed MIDI file to disk
 with open("example_converted.mid", "wb") as output_file:
@@ -99,7 +97,6 @@ A full explanation of the `midicsv` file format can be found [here](https://gith
 
 This library adheres as much as possible to how the original library works, however generated files are not guaranteed to be entirely identical when compared bit-by-bit.
 This is mostly due to the handling of meta-event data, especially lyric events, since the encoding scheme has changed. The original library did not encode some of the characters in the Latin-1 set, while this version does.
-
 
 ## Stargazers over time
 
